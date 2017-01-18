@@ -22,8 +22,10 @@ struct Constants {
     }
     
     struct StoryboardIds {
+        static let NewsDetailsViewController = "NewsDetailsViewController"
     }
     
     struct Notifications {
     }
+    
 }

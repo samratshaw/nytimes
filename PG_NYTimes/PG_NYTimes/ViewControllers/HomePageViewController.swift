@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  HomePageViewController.swift
 //  PG_NYTimes
 //
 //  Created by Samrat on 16/1/17.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: BaseViewController {
+class HomePageViewController: BaseViewController {
 
     /****************************/
     // MARK: - Properties
@@ -43,7 +43,7 @@ class ViewController: BaseViewController {
 /****************************/
 // MARK: - ViewController Extension: UICollectionViewDataSource
 /****************************/
-extension ViewController: UICollectionViewDataSource {
+extension HomePageViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         // TODO: - Need to map it to the data count
@@ -68,21 +68,29 @@ extension ViewController: UICollectionViewDataSource {
 /****************************/
 // MARK: - Extension: UICollectionViewDelegate
 /****************************/
-extension ViewController: UICollectionViewDelegate {
+
+extension HomePageViewController: UICollectionViewDelegate {
     
+    public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        // TODO: - Add information about the news item that was selected.
+        let newsDetailsViewController = self.storyboard?.instantiateViewController(withIdentifier :Constants.StoryboardIds.NewsDetailsViewController) as! NewsDetailsViewController
+        
+        navigationController?.pushViewController(newsDetailsViewController, animated: true)
+    }
 }
 
 /****************************/
 // MARK: - Extension: UICollectionViewDelegateFlowLayout
 /****************************/
-extension ViewController: UICollectionViewDelegateFlowLayout {
+extension HomePageViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width:collectionView.frame.width - 20, height:CGFloat(Constants.CellHeight.HomePageCollectionViewCellHeight))
+        return CGSize(width:collectionView.frame.width, height:CGFloat(Constants.CellHeight.HomePageCollectionViewCellHeight))
     }
 }
 /****************************/
 // MARK: - Extension: UICollectionViewDelegateFlowLayout
 /****************************/
-extension ViewController: UISearchBarDelegate {
+extension HomePageViewController: UISearchBarDelegate {
     
 }
