@@ -18,11 +18,11 @@ struct Constants {
     }
     
     struct CellHeight {
-        static let HomePageCollectionViewCellHeight = 200
+        static let HomePageCollectionViewCellHeight = 100
     }
     
     struct StoryboardIds {
-        static let NewsDetailsViewController = "NewsDetailsViewController"
+        static let NewsDetailsViewController = "newsDetailsViewController"
     }
     
     struct Notifications {

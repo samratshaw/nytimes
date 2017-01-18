@@ -31,13 +31,28 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="homePageCollectionViewCellIdentifier" id="n0D-Vz-QYa">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="homePageCollectionViewCellIdentifier" id="n0D-Vz-QYa" customClass="HomePageCollectionViewCell" customModule="PG_NYTimes" customModuleProvider="target">
                                         <rect key="frame" x="27" y="0.0" width="322" height="109"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="322" height="109"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Title" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wo6-iz-GxV">
+                                                    <rect key="frame" x="18" y="44" width="284" height="21"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="Wo6-iz-GxV" firstAttribute="centerY" secondItem="n0D-Vz-QYa" secondAttribute="centerY" id="XQX-Bp-x1h"/>
+                                            <constraint firstItem="Wo6-iz-GxV" firstAttribute="centerX" secondItem="n0D-Vz-QYa" secondAttribute="centerX" id="l56-jZ-96y"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="lblTitle" destination="Wo6-iz-GxV" id="fe4-hx-Wpq"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
@@ -80,7 +95,7 @@
         <!--News Details View Controller-->
         <scene sceneID="M40-oK-3AK">
             <objects>
-                <viewController storyboardIdentifier="NewsDetailsViewController" id="5zP-LM-cb0" customClass="NewsDetailsViewController" customModule="PG_NYTimes" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="newsDetailsViewController" id="5zP-LM-cb0" customClass="NewsDetailsViewController" customModule="PG_NYTimes" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="8fy-OA-O8k"/>
                         <viewControllerLayoutGuide type="bottom" id="R1Q-bk-T5N"/>
