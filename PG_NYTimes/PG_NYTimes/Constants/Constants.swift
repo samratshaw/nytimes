@@ -14,9 +14,11 @@ import Foundation
 struct Constants {
     
     struct CellIdentifiers {
+        static let HomePageCollectionViewCellIdentifier = "homePageCollectionViewCellIdentifier"
     }
     
     struct CellHeight {
+        static let HomePageCollectionViewCellHeight = 200
     }
     
     struct StoryboardIds {
