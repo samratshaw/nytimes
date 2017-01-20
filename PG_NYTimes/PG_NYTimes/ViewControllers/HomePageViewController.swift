@@ -14,8 +14,27 @@ class HomePageViewController: BaseViewController {
     // MARK: - Properties
     /****************************/
     
+    // The view for displaying the news articles
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    // View allowing the user to search the news articles
     @IBOutlet weak var searchBar: UISearchBar!
+    
+    // View for showing the previous searches of the user.
+    @IBOutlet weak var tableView: UITableView!
+    
+    // Track whether the tableview is displayed or not
+    var isTableViewHidden: Bool  =  false {
+        didSet {
+            if isTableViewHidden {
+                tableView.isHidden = true
+                collectionView.isHidden = false
+            } else {
+                tableView.isHidden = false
+                collectionView.isHidden = true
+            }
+        }
+    }
     
     // TODO: - Remove after integrating the web service.
     var titles = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
@@ -26,10 +45,10 @@ class HomePageViewController: BaseViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        // Do any additional setup after loading the view, typically from a nib.
         
         title = "New York Times Clone"
-        
-        // Do any additional setup after loading the view, typically from a nib.
+        isTableViewHidden = true
         customizeSearchBar()
     }
 
@@ -130,6 +149,16 @@ extension HomePageViewController: UIScrollViewDelegate {
 /****************************/
 extension HomePageViewController: UISearchBarDelegate {
     
+    public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
+        // TODO: - Make sure that the user has last searched results before displaying the tableview
+        // Display the table view
+        if isTableViewHidden {
+            isTableViewHidden = false
+        }
+        
+        return true
+    }
+    
     public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
     }
@@ -151,13 +180,58 @@ extension HomePageViewController: UISearchBarDelegate {
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        if searchBar.isFirstResponder {
-            searchBar.resignFirstResponder()
-        }
+        // Hide the keyboard & also the table view if it shown
+        removeSearchBarAsFirstResponderAndHideTableView()
     }
     
     public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
         
     }
+}
+
+/****************************/
+// MARK: - Extension: UITableViewDataSource
+/****************************/
+extension HomePageViewController: UITableViewDataSource {
     
+    public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return Constants.General.SearchResultsMaximumCount
+    }
+    
+    public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: Constants.CellIdentifiers.HomePageSearchResultsTableViewCellIdentifier, for:indexPath)
+        cell.textLabel?.text = "Last searched text"
+        return cell
+    }
+}
+
+/****************************/
+// MARK: - Extension: UITableViewDelegate
+/****************************/
+extension HomePageViewController: UITableViewDelegate {
+    
+    public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView .deselectRow(at: indexPath, animated: true)
+        
+        // Filter the collection view, search bar based on the selection & also hide the tableview
+        // TODO: - Add logic for handling the selection of the tableview
+        removeSearchBarAsFirstResponderAndHideTableView()
+    }
+}
+
+private extension HomePageViewController {
+    
+    /**
+     Method to resign the first responder from search bar & hide the tableview.
+     */
+    func removeSearchBarAsFirstResponderAndHideTableView() {
+        
+        if searchBar.isFirstResponder {
+            searchBar.resignFirstResponder()
+        }
+        
+        if !isTableViewHidden {
+            isTableViewHidden = true
+        }
+    }
 }

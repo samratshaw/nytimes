@@ -102,6 +102,27 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="bac-0d-jhK"/>
                                 </connections>
                             </collectionView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CW4-h3-aIq">
+                                <rect key="frame" x="0.0" y="108" width="375" height="300"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="300" id="96T-Fw-J9e"/>
+                                </constraints>
+                                <prototypes>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="homePageSearchResultsTableViewCellIdentifier" id="ALx-Ag-xKx">
+                                        <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ALx-Ag-xKx" id="frf-Ub-Ixy">
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </prototypes>
+                                <connections>
+                                    <outlet property="dataSource" destination="BYZ-38-t0r" id="c6I-50-nxs"/>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="iU3-01-rXF"/>
+                                </connections>
+                            </tableView>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="xkI-a2-HOn">
                                 <rect key="frame" x="0.0" y="64" width="375" height="44"/>
                                 <constraints>
@@ -119,8 +140,11 @@
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="e4w-9w-H6y" secondAttribute="bottom" id="BQy-qf-JWU"/>
                             <constraint firstItem="xkI-a2-HOn" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EbA-sc-i5a"/>
                             <constraint firstItem="e4w-9w-H6y" firstAttribute="top" secondItem="xkI-a2-HOn" secondAttribute="bottom" id="QAC-75-KRz"/>
+                            <constraint firstAttribute="trailing" secondItem="CW4-h3-aIq" secondAttribute="trailing" id="SM4-ZM-i6f"/>
                             <constraint firstAttribute="trailing" secondItem="e4w-9w-H6y" secondAttribute="trailing" id="agP-Fl-et3"/>
                             <constraint firstItem="xkI-a2-HOn" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="hpD-hd-AsF"/>
+                            <constraint firstItem="CW4-h3-aIq" firstAttribute="top" secondItem="xkI-a2-HOn" secondAttribute="bottom" id="kka-AD-oEK"/>
+                            <constraint firstItem="CW4-h3-aIq" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="see-bd-fo0"/>
                             <constraint firstItem="e4w-9w-H6y" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wc5-6z-CCM"/>
                         </constraints>
                     </view>
@@ -128,6 +152,7 @@
                     <connections>
                         <outlet property="collectionView" destination="e4w-9w-H6y" id="h9b-ON-6Lj"/>
                         <outlet property="searchBar" destination="xkI-a2-HOn" id="n5w-44-M1t"/>
+                        <outlet property="tableView" destination="CW4-h3-aIq" id="ImT-CV-lbN"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

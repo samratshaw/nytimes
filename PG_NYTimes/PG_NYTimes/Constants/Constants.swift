@@ -15,6 +15,7 @@ struct Constants {
     
     struct CellIdentifiers {
         static let HomePageCollectionViewCellIdentifier = "homePageCollectionViewCellIdentifier"
+        static let HomePageSearchResultsTableViewCellIdentifier = "homePageSearchResultsTableViewCellIdentifier"
     }
     
     struct CellHeight {
@@ -28,4 +29,7 @@ struct Constants {
     struct Notifications {
     }
     
+    struct General {
+        static let SearchResultsMaximumCount = 10
+    }
 }
