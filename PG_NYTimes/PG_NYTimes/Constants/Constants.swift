@@ -19,7 +19,7 @@ struct Constants {
     }
     
     struct CellHeight {
-        static let HomePageCollectionViewCellHeight = 276
+        static let HomePageCollectionViewCellHeight = 268
     }
     
     struct StoryboardIds {

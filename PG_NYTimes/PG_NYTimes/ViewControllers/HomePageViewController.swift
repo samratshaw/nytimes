@@ -125,9 +125,9 @@ extension HomePageViewController: UIScrollViewDelegate {
     // Used scrollview delegate instead of "willDisplayCell" since the collection view was not loading as expected when we reached the bottom of the collection. Comparatively this performed better.
     public func scrollViewDidScroll(_ scrollView: UIScrollView) {
         
-        let bottomEdge = scrollView.contentOffset.y + scrollView.frame.size.height;
+        let scrollViewBottomEdge = scrollView.contentOffset.y + scrollView.frame.size.height;
         
-        if bottomEdge >= scrollView.contentSize.height {
+        if scrollViewBottomEdge >= scrollView.contentSize.height {
             // TODO: - Need to call the webservice here & show the activity indicator
             
             // TODO: - Remove after integrating the web service.
@@ -219,6 +219,9 @@ extension HomePageViewController: UITableViewDelegate {
     }
 }
 
+/****************************/
+// MARK: - Private Extension
+/****************************/
 private extension HomePageViewController {
     
     /**

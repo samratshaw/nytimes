@@ -32,13 +32,13 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="homePageCollectionViewCellIdentifier" id="n0D-Vz-QYa" customClass="HomePageCollectionViewCell" customModule="PG_NYTimes" customModuleProvider="target">
-                                        <rect key="frame" x="27" y="0.0" width="322" height="276"/>
+                                        <rect key="frame" x="27" y="0.0" width="322" height="272"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                                            <rect key="frame" x="0.0" y="0.0" width="322" height="276"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="322" height="272"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="jyb-ML-suV">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BN-1" translatesAutoresizingMaskIntoConstraints="NO" id="jyb-ML-suV">
                                                     <rect key="frame" x="8" y="4" width="306" height="150"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="150" id="SWh-VG-EIi"/>
@@ -53,8 +53,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="92L-Ia-Shn">
-                                                    <rect key="frame" x="8" y="182" width="306" height="66"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="92L-Ia-Shn">
+                                                    <rect key="frame" x="8" y="180" width="306" height="66"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="66" id="30l-Wi-ofc"/>
                                                     </constraints>
@@ -63,8 +63,8 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="18th Dec" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ekl-KU-7Em">
-                                                    <rect key="frame" x="8" y="253" width="306" height="21"/>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="18th Dec 2017" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ekl-KU-7Em">
+                                                    <rect key="frame" x="8" y="249" width="306" height="21"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="21" id="uDU-1B-dV9"/>
                                                     </constraints>
@@ -72,6 +72,13 @@
                                                     <nil key="textColor"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="MEe-JI-DFP" userLabel="Separator">
+                                                    <rect key="frame" x="0.0" y="271" width="322" height="1"/>
+                                                    <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="1" id="K7A-Ev-Uzo"/>
+                                                    </constraints>
+                                                </imageView>
                                             </subviews>
                                         </view>
                                         <constraints>
@@ -84,11 +91,14 @@
                                             <constraint firstAttribute="bottom" secondItem="Ekl-KU-7Em" secondAttribute="bottom" constant="2" id="FHI-mA-etQ"/>
                                             <constraint firstItem="K27-xC-fDZ" firstAttribute="leading" secondItem="jyb-ML-suV" secondAttribute="leading" id="GNV-Hq-hb8"/>
                                             <constraint firstAttribute="trailing" secondItem="jyb-ML-suV" secondAttribute="trailing" constant="8" id="GrC-a4-kvr"/>
-                                            <constraint firstItem="92L-Ia-Shn" firstAttribute="top" secondItem="K27-xC-fDZ" secondAttribute="bottom" constant="2" id="PpU-WS-kT5"/>
+                                            <constraint firstItem="92L-Ia-Shn" firstAttribute="top" secondItem="K27-xC-fDZ" secondAttribute="bottom" id="PpU-WS-kT5"/>
                                             <constraint firstItem="92L-Ia-Shn" firstAttribute="leading" secondItem="K27-xC-fDZ" secondAttribute="leading" id="aCu-4Z-8nk"/>
                                             <constraint firstItem="K27-xC-fDZ" firstAttribute="trailing" secondItem="jyb-ML-suV" secondAttribute="trailing" id="ccW-3h-ORF"/>
+                                            <constraint firstAttribute="bottom" secondItem="MEe-JI-DFP" secondAttribute="bottom" id="coI-Ox-odg"/>
+                                            <constraint firstAttribute="trailing" secondItem="MEe-JI-DFP" secondAttribute="trailing" id="czG-Td-gUT"/>
+                                            <constraint firstItem="MEe-JI-DFP" firstAttribute="leading" secondItem="n0D-Vz-QYa" secondAttribute="leading" id="zCS-oh-tIt"/>
                                         </constraints>
-                                        <size key="customSize" width="322" height="276"/>
+                                        <size key="customSize" width="322" height="272"/>
                                         <connections>
                                             <outlet property="imgVw" destination="jyb-ML-suV" id="e2n-kq-0IA"/>
                                             <outlet property="lblDate" destination="Ekl-KU-7Em" id="dgZ-3U-mMs"/>
@@ -196,4 +206,7 @@
             <point key="canvasLocation" x="21.600000000000001" y="34.632683658170919"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="BN-1" width="16" height="16"/>
+    </resources>
 </document>
