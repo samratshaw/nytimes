@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class HomePageViewController: BaseViewController {
 
@@ -102,9 +103,30 @@ extension HomePageViewController: UICollectionViewDelegate {
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         // TODO: - Add information about the news item that was selected.
-        let newsDetailsViewController = self.storyboard?.instantiateViewController(withIdentifier :Constants.StoryboardIds.NewsDetailsViewController) as! NewsDetailsViewController
+        /*let newsDetailsViewController = self.storyboard?.instantiateViewController(withIdentifier :Constants.StoryboardIds.NewsDetailsViewController) as! NewsDetailsViewController
         
-        navigationController?.pushViewController(newsDetailsViewController, animated: true)
+        navigationController?.pushViewController(newsDetailsViewController, animated: true)*/
+        
+        // TODO: - Replace the hard coded url with actual url provided by the API
+        let safariViewController = SFSafariViewController(url: NSURL(string: "https://www.nytimes.com/2016/12/20/business/dealbook/iguanafix-an-argentine-start-up-raises-16-million.html") as! URL, entersReaderIfAvailable:true)
+        safariViewController.delegate = self
+        
+        // hide navigation bar and present safari view controller
+        self.present(safariViewController, animated: true) { 
+            
+        }
+    }
+}
+
+/****************************/
+// MARK: - Extension: SFSafariViewControllerDelegate
+/****************************/
+extension HomePageViewController: SFSafariViewControllerDelegate {
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true) { 
+            
+        }
     }
 }
 
