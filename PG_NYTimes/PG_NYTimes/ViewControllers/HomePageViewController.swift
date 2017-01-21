@@ -23,6 +23,9 @@ class HomePageViewController: BaseViewController {
     // View for showing the previous searches of the user.
     @IBOutlet weak var tableView: UITableView!
     
+    // Array for keeping track of the last searched items
+    var lastSearchedItems: Array<String> = []
+    
     // Track whether the tableview is displayed or not
     var isTableViewHidden: Bool  =  false {
         didSet {
@@ -151,10 +154,14 @@ extension HomePageViewController: UISearchBarDelegate {
     
     public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         // TODO: - Make sure that the user has last searched results before displaying the tableview
+        
         // Display the table view
         if isTableViewHidden {
             isTableViewHidden = false
         }
+        
+        // Reload the contents of tableview
+        tableView.reloadData()
         
         return true
     }
@@ -177,10 +184,15 @@ extension HomePageViewController: UISearchBarDelegate {
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         // TODO: - Add the Filtering logic here
+        lastSearchedItems.insert(searchBar.text!, at: 0)
+        
+        searchBar.text = ""
+        removeSearchBarAsFirstResponderAndHideTableView()
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // Hide the keyboard & also the table view if it shown
+        searchBar.text = ""
         removeSearchBarAsFirstResponderAndHideTableView()
     }
     
@@ -195,12 +207,12 @@ extension HomePageViewController: UISearchBarDelegate {
 extension HomePageViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Constants.General.SearchResultsMaximumCount
+        return lastSearchedItems.count > 10 ? Constants.General.SearchResultsMaximumCount : lastSearchedItems.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.CellIdentifiers.HomePageSearchResultsTableViewCellIdentifier, for:indexPath)
-        cell.textLabel?.text = "Last searched text"
+        cell.textLabel?.text = lastSearchedItems[indexPath.row]
         return cell
     }
 }
@@ -238,3 +250,5 @@ private extension HomePageViewController {
         }
     }
 }
+
+/****************************/
