@@ -9,9 +9,9 @@
 import Foundation
 
 /**
- This is the base class for all the entities that are used in the project.
- All common functionlity of entities should be declared here. 
+ This is the base protocol for all the entities that are used in the project.
+ All common properties of entities should be declared here. 
  */
-struct BaseEntity {
+protocol BaseEntity {
     
 }

@@ -177,13 +177,15 @@ extension HomePageViewController: UISearchBarDelegate {
     public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         // TODO: - Make sure that the user has last searched results before displaying the tableview
         
-        // Display the table view
-        if isTableViewHidden {
-            isTableViewHidden = false
+        if lastSearchedItems.count > 0 {
+            // Display the table view
+            if isTableViewHidden {
+                isTableViewHidden = false
+            }
+            
+            // Reload the contents of tableview
+            tableView.reloadData()
         }
-        
-        // Reload the contents of tableview
-        tableView.reloadData()
         
         return true
     }
