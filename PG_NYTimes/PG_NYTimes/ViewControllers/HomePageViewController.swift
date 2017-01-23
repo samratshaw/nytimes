@@ -24,8 +24,21 @@ class HomePageViewController: BaseViewController {
     // View for showing the previous searches of the user.
     @IBOutlet weak var tableView: UITableView!
     
+    // The service class attached with this controller
+    var service: NewsArticleService = NewsArticleService()
+    
     // Array for keeping track of the last searched items
     var lastSearchedItems: Array<String> = []
+    
+    // Array containing the articles
+    var articles: Array<NewsArticle> = [] {
+        didSet {
+            collectionView.reloadData()
+        }
+    }
+    
+    // The page that was last loaded
+    var pageNumber: CUnsignedShort = 0
     
     // Track whether the tableview is displayed or not
     var isTableViewHidden: Bool  =  false {
@@ -51,6 +64,9 @@ class HomePageViewController: BaseViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        // Call the service
+        getNewsArticles(fromService: service)
+        
         title = "New York Times Clone"
         isTableViewHidden = true
         customizeSearchBar()
@@ -66,6 +82,33 @@ class HomePageViewController: BaseViewController {
     /****************************/
     func customizeSearchBar() {
         searchBar.showsCancelButton = true
+    }
+    
+    func getNewsArticles<Service: Gettable>(fromService service: Service) where Service.AssociatedData == [NewsArticle] {
+        
+        service.getWithParameters(["page":String(pageNumber)]) { [weak self] result in
+            switch result {
+            case .Success(let newsArticles):
+                self?.articles = newsArticles
+            case .Failure(let error):
+                print(error)
+            }
+        }
+        
+        // TODO: - Need to pass the page number here.
+        
+        
+//        service.getWithParame() { [weak self] result in
+//            
+//            switch result {
+//            case .Success(let food):
+//                self?.articles = food
+//            case .Failure(let error):
+//                // TODO: - Handle error scenario
+//                //self?.showError(error)
+//                self?.title = "Something went wrong" + error.localizedDescription
+//            }
+//        }
     }
 }
 

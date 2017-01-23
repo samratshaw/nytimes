@@ -29,6 +29,11 @@ struct Constants {
     struct Notifications {
     }
     
+    struct URLs {
+        static let BaseURL = "https://api.nytimes.com/svc/search/v2/articlesearch.json"
+        static let GetArticles = URLs.BaseURL + "?api-key=1c71cb656b4041ef9b2f49a194b79571&q=singapore&sort=newest"
+    }
+    
     struct General {
         static let SearchResultsMaximumCount = 10
     }
