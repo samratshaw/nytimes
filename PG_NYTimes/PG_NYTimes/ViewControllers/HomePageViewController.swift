@@ -24,6 +24,8 @@ class HomePageViewController: BaseViewController {
     // View for showing the previous searches of the user.
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
     // The service class attached with this controller
     var service: NewsArticleService = NewsArticleService()
     
@@ -53,8 +55,7 @@ class HomePageViewController: BaseViewController {
         }
     }
     
-    // TODO: - Remove after integrating the web service.
-    var titles = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+    var isInitialDataLoaded: Bool = false
     
     /****************************/
     // MARK: - View Lifecycle
@@ -80,35 +81,30 @@ class HomePageViewController: BaseViewController {
     /****************************/
     // MARK: - Helpers
     /****************************/
-    func customizeSearchBar() {
+    private func customizeSearchBar() {
         searchBar.showsCancelButton = true
     }
     
     func getNewsArticles<Service: Gettable>(fromService service: Service) where Service.AssociatedData == [NewsArticle] {
         
+        // Start the loading indicator
+        activityIndicator.startAnimating()
+        
         service.getWithParameters(["page":String(pageNumber)]) { [weak self] result in
             switch result {
             case .Success(let newsArticles):
-                self?.articles = newsArticles
+                DispatchQueue.main.async {
+                    print(newsArticles)
+                    self?.isInitialDataLoaded = true
+                    self?.articles += newsArticles
+                    self?.collectionView.reloadData()
+                    self?.activityIndicator.stopAnimating()
+                }
             case .Failure(let error):
                 print(error)
+                self?.activityIndicator.stopAnimating()
             }
         }
-        
-        // TODO: - Need to pass the page number here.
-        
-        
-//        service.getWithParame() { [weak self] result in
-//            
-//            switch result {
-//            case .Success(let food):
-//                self?.articles = food
-//            case .Failure(let error):
-//                // TODO: - Handle error scenario
-//                //self?.showError(error)
-//                self?.title = "Something went wrong" + error.localizedDescription
-//            }
-//        }
     }
 }
 
@@ -119,20 +115,21 @@ extension HomePageViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         // TODO: - Need to map it to the data count
-        return 1
+        return isInitialDataLoaded ? 1 : 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // TODO: - Need to map it to the data count
-        return titles.count
+        return articles.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        // TODO: - Need to map it to the data properties
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellIdentifiers.HomePageCollectionViewCellIdentifier, for: indexPath) as! HomePageCollectionViewCell
         
-        //cell.lblTitle.text = titles[indexPath.row]
-        //cell.backgroundColor = UIColor.blue
+        cell.lblTitle.text = articles[indexPath.row].headline
+        cell.lblSnippet.text = articles[indexPath.row].snippet
+        cell.lblDate.text = articles[indexPath.row].publicationDate
+        
         return cell
     }
 }
@@ -151,7 +148,8 @@ extension HomePageViewController: UICollectionViewDelegate {
         navigationController?.pushViewController(newsDetailsViewController, animated: true)*/
         
         // TODO: - Replace the hard coded url with actual url provided by the API
-        let safariViewController = SFSafariViewController(url: NSURL(string: "https://www.nytimes.com/2016/12/20/business/dealbook/iguanafix-an-argentine-start-up-raises-16-million.html") as! URL, entersReaderIfAvailable:true)
+        let url = articles[indexPath.row].webUrl
+        let safariViewController = SFSafariViewController(url: NSURL(string: url) as! URL, entersReaderIfAvailable:true)
         safariViewController.delegate = self
         
         // hide navigation bar and present safari view controller
@@ -167,8 +165,7 @@ extension HomePageViewController: UICollectionViewDelegate {
 extension HomePageViewController: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        controller.dismiss(animated: true) { 
-            
+        controller.dismiss(animated: true) {
         }
     }
 }
@@ -191,23 +188,17 @@ extension HomePageViewController: UICollectionViewDelegateFlowLayout {
 extension HomePageViewController: UIScrollViewDelegate {
     
     // Used scrollview delegate instead of "willDisplayCell" since the collection view was not loading as expected when we reached the bottom of the collection. Comparatively this performed better.
-    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         
         let scrollViewBottomEdge = scrollView.contentOffset.y + scrollView.frame.size.height;
         
         if scrollViewBottomEdge >= scrollView.contentSize.height {
-            // TODO: - Need to call the webservice here & show the activity indicator
             
-            // TODO: - Remove after integrating the web service.
-            titles.append("10")
-            titles.append("11")
-            titles.append("12")
-            titles.append("13")
-            titles.append("14")
-            titles.append("15")
-            
-            
-            collectionView.reloadData()
+            // Only call the service when another call is not being made. The activity indicator will be shown when a service is being called. Thus using the same instead of declaring another bool.  
+            if !activityIndicator.isAnimating {
+                pageNumber += 1
+                getNewsArticles(fromService: service)
+            }
         }
     }
 }

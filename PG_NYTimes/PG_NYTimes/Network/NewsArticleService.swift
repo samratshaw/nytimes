@@ -17,6 +17,7 @@ struct NewsArticleService: Gettable {
         let request = getURLRequest(parameters)
         
         // Call the service
+        // TODO: - Add in constants/enum
         dataTask(request: request, method: "GET") { (data, response, error) in
             // Make sure that there is no error.
             guard error == nil else {
@@ -25,18 +26,36 @@ struct NewsArticleService: Gettable {
             }
             // Check if data is not nil
             guard let data = data else {
+                // TODO: - Handle this error scenario
                 completionHandler(Result.Success(Array<NewsArticle>()))
                 return
             }
             
-            let json = try! JSONSerialization.jsonObject(with: data, options: [])
-            print(json)
+            do {
+                let parsedData = try JSONSerialization.jsonObject(with: data, options: []) as! [String:Any]
+                completionHandler(Result.Success(self.parseResponse(parsedData)))
+            } catch let error as NSError {
+                // TODO: - Handle this error scenario
+                print(error)
+                completionHandler(Result.Success(Array<NewsArticle>()))
+            }
         }
+    }
+    
+    private func parseResponse(_ response: [String:Any]) -> [NewsArticle] {
+        let response = (response["response"] as? [String:Any])
+        let docs = response?["docs"] as? Array<[String:Any]>
         
-        // Parse the response
-        let arrArticles = Array<NewsArticle>()
-        
-        completionHandler(Result.Success(arrArticles))
+        var arrArticles = [NewsArticle]()
+        // Now loop throught the array & create the models
+        for dict in docs! {
+            
+            if let article = NewsArticle.init(dict) {
+                // Only added if the article is not nil
+                arrArticles.append(article)
+            }
+        }
+        return arrArticles
     }
     
     /**

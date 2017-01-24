@@ -112,6 +112,9 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="bac-0d-jhK"/>
                                 </connections>
                             </collectionView>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="QwG-dU-DM8">
+                                <rect key="frame" x="178" y="324" width="20" height="20"/>
+                            </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CW4-h3-aIq">
                                 <rect key="frame" x="0.0" y="108" width="375" height="300"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -151,15 +154,18 @@
                             <constraint firstItem="xkI-a2-HOn" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="EbA-sc-i5a"/>
                             <constraint firstItem="e4w-9w-H6y" firstAttribute="top" secondItem="xkI-a2-HOn" secondAttribute="bottom" id="QAC-75-KRz"/>
                             <constraint firstAttribute="trailing" secondItem="CW4-h3-aIq" secondAttribute="trailing" id="SM4-ZM-i6f"/>
+                            <constraint firstItem="QwG-dU-DM8" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="aOA-IK-8Nj"/>
                             <constraint firstAttribute="trailing" secondItem="e4w-9w-H6y" secondAttribute="trailing" id="agP-Fl-et3"/>
                             <constraint firstItem="xkI-a2-HOn" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="hpD-hd-AsF"/>
                             <constraint firstItem="CW4-h3-aIq" firstAttribute="top" secondItem="xkI-a2-HOn" secondAttribute="bottom" id="kka-AD-oEK"/>
+                            <constraint firstItem="QwG-dU-DM8" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="nba-9m-KtH"/>
                             <constraint firstItem="CW4-h3-aIq" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="see-bd-fo0"/>
                             <constraint firstItem="e4w-9w-H6y" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="wc5-6z-CCM"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="Q5K-kX-K02"/>
                     <connections>
+                        <outlet property="activityIndicator" destination="QwG-dU-DM8" id="qCM-vo-tRy"/>
                         <outlet property="collectionView" destination="e4w-9w-H6y" id="h9b-ON-6Lj"/>
                         <outlet property="searchBar" destination="xkI-a2-HOn" id="n5w-44-M1t"/>
                         <outlet property="tableView" destination="CW4-h3-aIq" id="ImT-CV-lbN"/>
