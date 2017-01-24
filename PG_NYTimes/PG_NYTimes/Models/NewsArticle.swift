@@ -47,29 +47,36 @@ extension NewsArticle {
         }
         
         // Set the id of the article
-        id = docs["_id"] as! String
+        id = docs[Constants.ResponseParameters.GetArticlesId] as! String
         
         // Set the headline
-        let dictHeadline = docs["headline"] as! [String:Any]
-        headline = dictHeadline["main"] as! String
+        let dictHeadline = docs[Constants.ResponseParameters.GetArticlesHeadline] as! [String:Any]
+        headline = dictHeadline[Constants.ResponseParameters.GetArticlesHeadlineMain] as! String
         
         // Set the snippet
-        snippet = docs["snippet"] as! String
+        snippet = docs[Constants.ResponseParameters.GetArticlesSnippet] as! String
         
         // Set the web url.
-        webUrl = docs["web_url"] as! String
+        webUrl = docs[Constants.ResponseParameters.GetArticlesWebUrl] as! String
         
         // Set the image associated with the article
-        let arrMultimedia = docs["multimedia"] as! [[String:Any]]
+        let arrMultimedia = docs[Constants.ResponseParameters.GetArticlesMultimedia] as! [[String:Any]]
         
         // Since the articles always have 2 objects, and we are taking the 2nd object(largest image)
-        if arrMultimedia.count > 2 {
-            imageUrl = arrMultimedia[1]["url"] as! String
+        if arrMultimedia.count > 0 {
+            imageUrl = Constants.URLs.ImageBaseURL + (arrMultimedia.first![Constants.ResponseParameters.GetArticlesMultimediaUrl] as! String)
         } else {
             imageUrl = ""
         }
         
         // The publication date of the article
-        publicationDate = docs["pub_date"] as! String
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = Constants.General.ServerDateFormat
+        if let date = dateFormatter.date(from: docs[Constants.ResponseParameters.GetArticlesPublicationDate] as! String) {
+            dateFormatter.dateFormat = Constants.General.DisplayDateFormat
+            publicationDate = dateFormatter.string(from: date)
+        } else {
+            publicationDate = ""
+        }
     }
 }

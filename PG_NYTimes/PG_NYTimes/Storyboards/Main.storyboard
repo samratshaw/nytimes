@@ -23,7 +23,7 @@
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="e4w-9w-H6y">
                                 <rect key="frame" x="0.0" y="108" width="375" height="559"/>
-                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="95w-2Z-XFc">
                                     <size key="itemSize" width="322" height="109"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
@@ -32,13 +32,13 @@
                                 </collectionViewFlowLayout>
                                 <cells>
                                     <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="homePageCollectionViewCellIdentifier" id="n0D-Vz-QYa" customClass="HomePageCollectionViewCell" customModule="PG_NYTimes" customModuleProvider="target">
-                                        <rect key="frame" x="27" y="0.0" width="322" height="272"/>
+                                        <rect key="frame" x="26.5" y="0.0" width="322" height="272"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="322" height="272"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="BN-1" translatesAutoresizingMaskIntoConstraints="NO" id="jyb-ML-suV">
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="DefaultImage" translatesAutoresizingMaskIntoConstraints="NO" id="jyb-ML-suV">
                                                     <rect key="frame" x="8" y="4" width="306" height="150"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="150" id="SWh-VG-EIi"/>
@@ -112,8 +112,8 @@
                                     <outlet property="delegate" destination="BYZ-38-t0r" id="bac-0d-jhK"/>
                                 </connections>
                             </collectionView>
-                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="QwG-dU-DM8">
-                                <rect key="frame" x="178" y="324" width="20" height="20"/>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="QwG-dU-DM8">
+                                <rect key="frame" x="169" y="315" width="37" height="37"/>
                             </activityIndicatorView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="CW4-h3-aIq">
                                 <rect key="frame" x="0.0" y="108" width="375" height="300"/>
@@ -126,7 +126,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ALx-Ag-xKx" id="frf-Ub-Ixy">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -175,24 +175,6 @@
             </objects>
             <point key="canvasLocation" x="960.79999999999995" y="34.632683658170919"/>
         </scene>
-        <!--News Details View Controller-->
-        <scene sceneID="M40-oK-3AK">
-            <objects>
-                <viewController storyboardIdentifier="newsDetailsViewController" id="5zP-LM-cb0" customClass="NewsDetailsViewController" customModule="PG_NYTimes" customModuleProvider="target" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="8fy-OA-O8k"/>
-                        <viewControllerLayoutGuide type="bottom" id="R1Q-bk-T5N"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Kzj-Cp-nBw">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Qst-l7-uwl" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1788" y="35"/>
-        </scene>
         <!--Navigation Controller-->
         <scene sceneID="MrG-Ym-cRi">
             <objects>
@@ -213,6 +195,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="BN-1" width="16" height="16"/>
+        <image name="DefaultImage" width="16" height="16"/>
     </resources>
 </document>

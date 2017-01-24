@@ -84,30 +84,7 @@ class HomePageViewController: BaseViewController {
     private func customizeSearchBar() {
         searchBar.showsCancelButton = true
     }
-    
-    func getNewsArticles<Service: Gettable>(fromService service: Service) where Service.AssociatedData == [NewsArticle] {
-        
-        // Start the loading indicator
-        activityIndicator.startAnimating()
-        
-        service.getWithParameters(["page":String(pageNumber)]) { [weak self] result in
-            switch result {
-            case .Success(let newsArticles):
-                DispatchQueue.main.async {
-                    print(newsArticles)
-                    self?.isInitialDataLoaded = true
-                    self?.articles += newsArticles
-                    self?.collectionView.reloadData()
-                    self?.activityIndicator.stopAnimating()
-                }
-            case .Failure(let error):
-                print(error)
-                self?.activityIndicator.stopAnimating()
-            }
-        }
-    }
 }
-
 /****************************/
 // MARK: - ViewController Extension: UICollectionViewDataSource
 /****************************/
@@ -130,35 +107,40 @@ extension HomePageViewController: UICollectionViewDataSource {
         cell.lblSnippet.text = articles[indexPath.row].snippet
         cell.lblDate.text = articles[indexPath.row].publicationDate
         
+        // Load the image async
+        let imageUrl = articles[indexPath.row].imageUrl
+        
+        var url: URL
+        if !imageUrl.isEmpty {
+            url = URL(string: imageUrl)!
+        } else {
+            url = URL(string:"http://placehold.it/612x300")!
+        }
+        
+        DispatchQueue.global().async {
+            let data = try? Data(contentsOf: url)
+            DispatchQueue.main.async {
+                cell.imgVw.image = UIImage(data: data!)
+            }
+        }
+        
         return cell
     }
 }
-
 /****************************/
 // MARK: - Extension: UICollectionViewDelegate
 /****************************/
-
 extension HomePageViewController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // TODO: - Add information about the news item that was selected.
-        /*let newsDetailsViewController = self.storyboard?.instantiateViewController(withIdentifier :Constants.StoryboardIds.NewsDetailsViewController) as! NewsDetailsViewController
-        
-        navigationController?.pushViewController(newsDetailsViewController, animated: true)*/
-        
-        // TODO: - Replace the hard coded url with actual url provided by the API
         let url = articles[indexPath.row].webUrl
         let safariViewController = SFSafariViewController(url: NSURL(string: url) as! URL, entersReaderIfAvailable:true)
         safariViewController.delegate = self
         
-        // hide navigation bar and present safari view controller
-        self.present(safariViewController, animated: true) { 
-            
-        }
+        // Present the SFSafariViewController
+        self.present(safariViewController, animated: true)
     }
 }
-
 /****************************/
 // MARK: - Extension: SFSafariViewControllerDelegate
 /****************************/
@@ -169,11 +151,9 @@ extension HomePageViewController: SFSafariViewControllerDelegate {
         }
     }
 }
-
 /****************************/
 // MARK: - Extension: UICollectionViewDelegateFlowLayout
 /****************************/
-
 extension HomePageViewController: UICollectionViewDelegateFlowLayout {
     
     // This was implemented to make sure that the cells resize correctly as per the different screen sizes.
@@ -181,7 +161,6 @@ extension HomePageViewController: UICollectionViewDelegateFlowLayout {
         return CGSize(width:collectionView.frame.width, height:CGFloat(Constants.CellHeight.HomePageCollectionViewCellHeight))
     }
 }
-
 /****************************/
 // MARK: - Extension: UIScrollViewDelegate
 /****************************/
@@ -202,41 +181,21 @@ extension HomePageViewController: UIScrollViewDelegate {
         }
     }
 }
-
 /****************************/
 // MARK: - Extension: UISearchBarDelegate
 /****************************/
 extension HomePageViewController: UISearchBarDelegate {
     
     public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
-        // TODO: - Make sure that the user has last searched results before displaying the tableview
-        
+        // Only show the table if there are any previous searched items.
         if lastSearchedItems.count > 0 {
             // Display the table view
             if isTableViewHidden {
                 isTableViewHidden = false
             }
-            
             // Reload the contents of tableview
             tableView.reloadData()
         }
-        
-        return true
-    }
-    
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        
-    }
-    
-    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        
-    }
-    
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-    }
-    
-    public func searchBar(_ searchBar: UISearchBar, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         return true
     }
     
@@ -253,12 +212,7 @@ extension HomePageViewController: UISearchBarDelegate {
         searchBar.text = ""
         removeSearchBarAsFirstResponderAndHideTableView()
     }
-    
-    public func searchBarResultsListButtonClicked(_ searchBar: UISearchBar) {
-        
-    }
 }
-
 /****************************/
 // MARK: - Extension: UITableViewDataSource
 /****************************/
@@ -274,7 +228,6 @@ extension HomePageViewController: UITableViewDataSource {
         return cell
     }
 }
-
 /****************************/
 // MARK: - Extension: UITableViewDelegate
 /****************************/
@@ -295,16 +248,41 @@ extension HomePageViewController: UITableViewDelegate {
 private extension HomePageViewController {
     
     /**
-     Method to resign the first responder from search bar & hide the tableview.
+     * Method to resign the first responder from search bar & hide the tableview.
      */
     func removeSearchBarAsFirstResponderAndHideTableView() {
-        
         if searchBar.isFirstResponder {
             searchBar.resignFirstResponder()
         }
         
         if !isTableViewHidden {
             isTableViewHidden = true
+        }
+    }
+    
+    /**
+     * Method to call the web service to get news articles. This method will show the activity indicator, call the web sevice & then update the model.
+     */
+    func getNewsArticles<Service: Gettable>(fromService service: Service) where Service.AssociatedData == [NewsArticle] {
+        
+        // Start the loading indicator
+        activityIndicator.startAnimating()
+        
+        service.getWithParameters([Constants.RequestParameters.Page : String(pageNumber)]) { [weak self] result in
+            switch result {
+            case .Success(let newsArticles):
+                DispatchQueue.main.async {
+                    print(newsArticles)
+                    self?.isInitialDataLoaded = true
+                    self?.articles += newsArticles
+                    self?.collectionView.reloadData()
+                    self?.activityIndicator.stopAnimating()
+                }
+            case .Failure(let error):
+                // TODO: - Handle the error scenario
+                print(error)
+                self?.activityIndicator.stopAnimating()
+            }
         }
     }
 }

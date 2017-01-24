@@ -9,16 +9,19 @@
 import Foundation
 
 struct NewsArticleService: Gettable {
+    // Set the associated datatype
     typealias AssociatedData = [NewsArticle]
     
+    /****************************/
+    // MARK: - Protocol Implementation
+    /****************************/
     func getWithParameters(_ parameters: Dictionary<String, String>, completionHandler: @escaping (Result<AssociatedData>) -> Void) {
         
         // Get the request
         let request = getURLRequest(parameters)
         
         // Call the service
-        // TODO: - Add in constants/enum
-        dataTask(request: request, method: "GET") { (data, response, error) in
+        dataTask(request: request, method: HTTPMethod.GET.rawValue) { (data, response, error) in
             // Make sure that there is no error.
             guard error == nil else {
                 completionHandler(Result.Failure(error!))
@@ -41,11 +44,19 @@ struct NewsArticleService: Gettable {
             }
         }
     }
-    
-    private func parseResponse(_ response: [String:Any]) -> [NewsArticle] {
+}
+/****************************/
+// MARK: - Helpers
+/****************************/
+extension NewsArticleService {
+    /**
+     * Method to parse the data to models.
+     * Returns an array containing NewsArticle models.
+     */
+    func parseResponse(_ response: [String:Any]) -> [NewsArticle] {
         let response = (response["response"] as? [String:Any])
         let docs = response?["docs"] as? Array<[String:Any]>
-        
+
         var arrArticles = [NewsArticle]()
         // Now loop throught the array & create the models
         for dict in docs! {
@@ -59,9 +70,9 @@ struct NewsArticleService: Gettable {
     }
     
     /**
-     * Method to get the URLRequest
+     * Method to get the URLRequest for getting the news articles.
      */
-    private func getURLRequest(_ parameters: Dictionary<String, String>) -> URLRequest {
+    func getURLRequest(_ parameters: Dictionary<String, String>) -> URLRequest {
         // URL for the request
         var url = Constants.URLs.GetArticles
         
@@ -69,15 +80,14 @@ struct NewsArticleService: Gettable {
         for (key,value) in parameters {
             url += "&\(key)=\(value)"
         }
-        
         // Create the request
         return URLRequest(url: URL(string: url)!)
     }
     
     /**
-     * Method to call the network.
+     * Method to call the network async.
      */
-    private func dataTask( request: URLRequest, method: String, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
+    func dataTask( request: URLRequest, method: String, completion: @escaping (Data?, URLResponse?, Error?) -> ()) {
         
         var request = request
         request.httpMethod = method
