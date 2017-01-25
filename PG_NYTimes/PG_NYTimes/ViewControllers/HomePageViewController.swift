@@ -39,6 +39,12 @@ class HomePageViewController: BaseViewController {
         }
     }
     
+    // The array containing the filtered results
+    var arrFilteredArticles: Array<NewsArticle> = []
+    
+    // Keep track whether the datasource is filtered or not.
+    var isFiltered: Bool = false
+    
     // The page that was last loaded
     var pageNumber: CUnsignedShort = 0
     
@@ -97,33 +103,24 @@ extension HomePageViewController: UICollectionViewDataSource {
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         // TODO: - Need to map it to the data count
-        return articles.count
+        return isFiltered ? arrFilteredArticles.count : articles.count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellIdentifiers.HomePageCollectionViewCellIdentifier, for: indexPath) as! HomePageCollectionViewCell
         
-        cell.lblTitle.text = articles[indexPath.row].headline
-        cell.lblSnippet.text = articles[indexPath.row].snippet
-        cell.lblDate.text = articles[indexPath.row].publicationDate
+        let article = getArticleForCollectionCellAtIndexPath(indexPath)
         
-        // Load the image async
-        let imageUrl = articles[indexPath.row].imageUrl
-        
-        var url: URL
-        if !imageUrl.isEmpty {
-            url = URL(string: imageUrl)!
-        } else {
-            url = URL(string:"http://placehold.it/612x300")!
-        }
+        cell.lblTitle.text = article.headline
+        cell.lblSnippet.text = article.snippet
+        cell.lblDate.text = article.publicationDate
         
         DispatchQueue.global().async {
-            let data = try? Data(contentsOf: url)
+            let data = try? Data(contentsOf: self.getImageUrlFromArticle(article))
             DispatchQueue.main.async {
                 cell.imgVw.image = UIImage(data: data!)
             }
         }
-        
         return cell
     }
 }
@@ -133,8 +130,8 @@ extension HomePageViewController: UICollectionViewDataSource {
 extension HomePageViewController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let url = articles[indexPath.row].webUrl
-        let safariViewController = SFSafariViewController(url: NSURL(string: url) as! URL, entersReaderIfAvailable:true)
+        let selectedArticle = isFiltered ? arrFilteredArticles[indexPath.row] : articles[indexPath.row]
+        let safariViewController = SFSafariViewController(url: NSURL(string: selectedArticle.webUrl) as! URL, entersReaderIfAvailable:true)
         safariViewController.delegate = self
         
         // Present the SFSafariViewController
@@ -173,8 +170,8 @@ extension HomePageViewController: UIScrollViewDelegate {
         
         if scrollViewBottomEdge >= scrollView.contentSize.height {
             
-            // Only call the service when another call is not being made. The activity indicator will be shown when a service is being called. Thus using the same instead of declaring another bool.  
-            if !activityIndicator.isAnimating {
+            // Only call the service when another call is not being made. The activity indicator will be shown when a service is being called. Thus using the same instead of declaring another bool. Also added the filtring aspect.
+            if !activityIndicator.isAnimating && !isFiltered {
                 pageNumber += 1
                 getNewsArticles(fromService: service)
             }
@@ -200,16 +197,17 @@ extension HomePageViewController: UISearchBarDelegate {
     }
     
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        // TODO: - Add the Filtering logic here
-        lastSearchedItems.insert(searchBar.text!, at: 0)
-        
-        searchBar.text = ""
-        removeSearchBarAsFirstResponderAndHideTableView()
+        if (searchBar.text?.characters.count)! > 0 {
+            let searchText = searchBar.text!
+            lastSearchedItems.insert(searchText, at: 0)
+            performSearchForText(searchText)
+        }
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         // Hide the keyboard & also the table view if it shown
         searchBar.text = ""
+        isFiltered = false
         removeSearchBarAsFirstResponderAndHideTableView()
     }
 }
@@ -235,10 +233,8 @@ extension HomePageViewController: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView .deselectRow(at: indexPath, animated: true)
-        
-        // Filter the collection view, search bar based on the selection & also hide the tableview
-        // TODO: - Add logic for handling the selection of the tableview
-        removeSearchBarAsFirstResponderAndHideTableView()
+        let selectedSearchText = lastSearchedItems[indexPath.row]
+        performSearchForText(selectedSearchText)
     }
 }
 
@@ -258,6 +254,7 @@ private extension HomePageViewController {
         if !isTableViewHidden {
             isTableViewHidden = true
         }
+        collectionView.reloadData()
     }
     
     /**
@@ -285,6 +282,52 @@ private extension HomePageViewController {
             }
         }
     }
+    
+    /**
+     * Method to filter the array based on the search text. 
+     * This will update the property which will reload the collection view.
+     */
+    func filterArrayForSearchText(_ searchText: String) -> [NewsArticle] {
+        return articles.filter { (article) -> Bool in
+            return article.headline.contains(searchText)
+        }
+    }
+    
+    /**
+     * Method to get the article that needs to be dsiplayed.
+     * Checks if the the data needs to be filtered or not.
+     */
+    func getArticleForCollectionCellAtIndexPath(_ indexPath:IndexPath) -> NewsArticle {
+        let article: NewsArticle
+        if isFiltered {
+            article = arrFilteredArticles[indexPath.row]
+        } else {
+            article = articles[indexPath.row]
+        }
+        return article
+    }
+    
+    /**
+     * Method to get URL from the imageURL string of an article.
+     */
+    func getImageUrlFromArticle(_ article: NewsArticle) -> URL {
+        let url: URL
+        if !article.imageUrl.isEmpty {
+            url = URL(string: article.imageUrl)!
+        } else {
+            url = URL(string:"http://placehold.it/612x300")!
+        }
+        return url
+    }
+    
+    /**
+     * Method to perform the search depending on user's input
+     */
+    func performSearchForText(_ searchText: String) {
+        arrFilteredArticles = filterArrayForSearchText(searchText)
+        isFiltered = true
+        searchBar.text = searchText
+        removeSearchBarAsFirstResponderAndHideTableView()
+    }
 }
-
 /****************************/
