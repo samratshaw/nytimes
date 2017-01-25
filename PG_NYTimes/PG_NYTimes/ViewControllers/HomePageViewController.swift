@@ -97,12 +97,10 @@ class HomePageViewController: BaseViewController {
 extension HomePageViewController: UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        // TODO: - Need to map it to the data count
         return isInitialDataLoaded ? 1 : 0
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        // TODO: - Need to map it to the data count
         return isFiltered ? arrFilteredArticles.count : articles.count
     }
     
@@ -114,13 +112,17 @@ extension HomePageViewController: UICollectionViewDataSource {
         cell.lblTitle.text = article.headline
         cell.lblSnippet.text = article.snippet
         cell.lblDate.text = article.publicationDate
+        cell.imgVw.image = UIImage.init(named: Constants.Images.DefaultImage)
         
-        DispatchQueue.global().async {
-            let data = try? Data(contentsOf: self.getImageUrlFromArticle(article))
-            DispatchQueue.main.async {
-                cell.imgVw.image = UIImage(data: data!)
+        if !article.imageUrl.isEmpty {
+            DispatchQueue.global().async {
+                let data = try? Data(contentsOf: URL.init(string: article.imageUrl)!)
+                DispatchQueue.main.async {
+                    cell.imgVw.image = UIImage(data: data!)
+                }
             }
         }
+        
         return cell
     }
 }
@@ -139,16 +141,6 @@ extension HomePageViewController: UICollectionViewDelegate {
     }
 }
 /****************************/
-// MARK: - Extension: SFSafariViewControllerDelegate
-/****************************/
-extension HomePageViewController: SFSafariViewControllerDelegate {
-    
-    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
-        controller.dismiss(animated: true) {
-        }
-    }
-}
-/****************************/
 // MARK: - Extension: UICollectionViewDelegateFlowLayout
 /****************************/
 extension HomePageViewController: UICollectionViewDelegateFlowLayout {
@@ -156,6 +148,16 @@ extension HomePageViewController: UICollectionViewDelegateFlowLayout {
     // This was implemented to make sure that the cells resize correctly as per the different screen sizes.
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width:collectionView.frame.width, height:CGFloat(Constants.CellHeight.HomePageCollectionViewCellHeight))
+    }
+}
+/****************************/
+// MARK: - Extension: SFSafariViewControllerDelegate
+/****************************/
+extension HomePageViewController: SFSafariViewControllerDelegate {
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true) {
+        }
     }
 }
 /****************************/
@@ -241,7 +243,7 @@ extension HomePageViewController: UITableViewDelegate {
 /****************************/
 // MARK: - Private Extension
 /****************************/
-private extension HomePageViewController {
+extension HomePageViewController {
     
     /**
      * Method to resign the first responder from search bar & hide the tableview.
@@ -285,11 +287,11 @@ private extension HomePageViewController {
     
     /**
      * Method to filter the array based on the search text. 
-     * This will update the property which will reload the collection view.
+     * It filters based on "headline" property of the article.
      */
-    func filterArrayForSearchText(_ searchText: String) -> [NewsArticle] {
-        return articles.filter { (article) -> Bool in
-            return article.headline.contains(searchText)
+    func filterArray(_ array:[NewsArticle], ForSearchText searchText: String) -> [NewsArticle] {
+        return array.filter { (article) -> Bool in
+            return article.headline.localizedCaseInsensitiveContains(searchText)
         }
     }
     
@@ -308,23 +310,10 @@ private extension HomePageViewController {
     }
     
     /**
-     * Method to get URL from the imageURL string of an article.
-     */
-    func getImageUrlFromArticle(_ article: NewsArticle) -> URL {
-        let url: URL
-        if !article.imageUrl.isEmpty {
-            url = URL(string: article.imageUrl)!
-        } else {
-            url = URL(string:"http://placehold.it/612x300")!
-        }
-        return url
-    }
-    
-    /**
      * Method to perform the search depending on user's input
      */
     func performSearchForText(_ searchText: String) {
-        arrFilteredArticles = filterArrayForSearchText(searchText)
+        arrFilteredArticles = filterArray(articles, ForSearchText: searchText)
         isFiltered = true
         searchBar.text = searchText
         removeSearchBarAsFirstResponderAndHideTableView()

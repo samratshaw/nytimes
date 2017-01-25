@@ -50,6 +50,10 @@ struct Constants {
         static let GetArticlesPublicationDate = "pub_date"
     }
     
+    struct Images {
+        static let DefaultImage = "DefaultImage"
+    }
+    
     struct General {
         static let SearchResultsMaximumCount = 10
         static let ServerDateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
