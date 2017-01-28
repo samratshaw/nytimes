@@ -80,3 +80,18 @@ extension NewsArticle {
         }
     }
 }
+
+// Important for testing
+extension NewsArticle: Equatable {}
+    
+    func ==(lhs: NewsArticle, rhs: NewsArticle) -> Bool {
+        
+        let areEqual =  lhs.id == rhs.id &&
+                        lhs.headline == rhs.headline &&
+                        lhs.snippet == rhs.snippet &&
+                        lhs.imageUrl == rhs.imageUrl &&
+                        lhs.webUrl == rhs.webUrl &&
+                        lhs.publicationDate == rhs.publicationDate
+        
+        return areEqual
+    }

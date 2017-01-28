@@ -270,10 +270,10 @@ extension HomePageViewController {
         service.getWithParameters([Constants.RequestParameters.Page : String(pageNumber)]) { [weak self] result in
             switch result {
             case .Success(let newsArticles):
+                self?.isInitialDataLoaded = true
+                self?.articles += newsArticles
                 DispatchQueue.main.async {
                     print(newsArticles)
-                    self?.isInitialDataLoaded = true
-                    self?.articles += newsArticles
                     self?.collectionView.reloadData()
                     self?.activityIndicator.stopAnimating()
                 }

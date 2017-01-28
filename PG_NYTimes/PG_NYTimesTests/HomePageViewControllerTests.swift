@@ -9,7 +9,41 @@
 import XCTest
 @testable import PG_NYTimes
 
+
 class HomePageViewControllerTests: XCTestCase {
+    
+    /****************************/
+    // MARK: - Mocked Service Class
+    /****************************/
+    class MockNewsArticleService: Gettable {
+        
+        enum MockError: Error {
+            case NoInternetConnection
+        }
+        
+        let successScenario: Bool
+        
+        // Initializer
+        init(forSuccess successScenario: Bool) {
+            self.successScenario = successScenario
+        }
+        
+        var getWasCalled = false
+        
+        let successResult = Result.Success(HomePageViewControllerTests().getTestData())
+        let failureResult = Result<[NewsArticle]>.Failure(MockError.NoInternetConnection)
+        
+        func getWithParameters(_ parameters: Dictionary<String, String>, completionHandler: @escaping (Result<[NewsArticle]>) -> Void) {
+            
+            getWasCalled = true
+            
+            if successScenario {
+                completionHandler(successResult)
+            } else {
+                completionHandler(failureResult)
+            }
+        }
+    }
     
     /****************************/
     // MARK: - Properties
@@ -74,12 +108,92 @@ class HomePageViewControllerTests: XCTestCase {
         XCTAssertEqual(2, (viewController.filterArray(articles, ForSearchText: "Prices").count))
     }
     
+    func testStoryBoardConnections() {
+        XCTAssertNotNil(viewController.activityIndicator)
+        XCTAssertNotNil(viewController.collectionView)
+        XCTAssertNotNil(viewController.tableView)
+        XCTAssertNotNil(viewController.searchBar)
+    }
     
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+    func testObjectInitializationOnLaunch() {
+        XCTAssertNotNil(viewController.service)
+        XCTAssertNotNil(viewController.lastSearchedItems)
+        XCTAssertNotNil(viewController.articles)
+        XCTAssertNotNil(viewController.arrFilteredArticles)
+    }
+    
+    func testGetArticleForCollection() {
+        
+        viewController.articles = getTestData()
+        viewController.isFiltered = false
+        
+        XCTAssert(viewController.articles.first! == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 0, section: 0)))
+        XCTAssert(viewController.articles[1] == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 1, section: 0)))
+        
+        // Now check for filtered data
+        viewController.isFiltered = true
+        viewController.arrFilteredArticles = getTestFilteredData()
+        
+        XCTAssert(viewController.arrFilteredArticles[0] == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 0, section: 0)))
+    }
+    
+    func testGetNewsArticlesForSuccess() {
+        
+        let mockNewsArticleService = MockNewsArticleService(forSuccess: true)
+        // Before the service is called
+        XCTAssertEqual(0, viewController.articles.count)
+        XCTAssertFalse(viewController.isInitialDataLoaded)
+        XCTAssertTrue(viewController.isTableViewHidden)
+        
+        // UI should be not displayed to user
+        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
+        // Call the service
+        viewController.getNewsArticles(fromService: mockNewsArticleService)
+        
+        
+        // Check if service was called
+        XCTAssertTrue(mockNewsArticleService.getWasCalled)
+        
+        // Check if the local variables were updated
+        XCTAssertEqual(viewController.articles.count, getTestData().count)
+        XCTAssertEqual(viewController.articles.first, getTestData().first)
+        XCTAssertTrue(viewController.isInitialDataLoaded)
+        
+        // Data is displayed on screen
+        XCTAssertEqual(1, viewController.collectionView.numberOfSections)
+        XCTAssertEqual(getTestData().count, viewController.collectionView.numberOfItems(inSection: 0))
+        
+        // Call the service AGAIN
+        viewController.getNewsArticles(fromService: mockNewsArticleService)
+        // The total data should be appended
+        XCTAssertEqual(viewController.articles.count, (getTestData().count * 2))
+        XCTAssertEqual((getTestData().count * 2), viewController.collectionView.numberOfItems(inSection: 0))
+    }
+    
+    func testGetNewsArticlesForFailure() {
+        
+        let mockNewsArticleService = MockNewsArticleService(forSuccess: false)
+        // Before the service is called
+        XCTAssertEqual(0, viewController.articles.count)
+        XCTAssertFalse(viewController.isInitialDataLoaded)
+        XCTAssertTrue(viewController.isTableViewHidden)
+        
+        // UI should be not displayed to user
+        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
+        
+        // Call the service
+        viewController.getNewsArticles(fromService: mockNewsArticleService)
+        
+        
+        // Check if service was called
+        XCTAssertTrue(mockNewsArticleService.getWasCalled)
+        
+        // Check if the local variables were updated
+        XCTAssertEqual(0, viewController.articles.count)
+        XCTAssertFalse(viewController.isInitialDataLoaded)
+        
+        // Data is displayed on screen
+        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
     }
     
     /****************************/
@@ -119,4 +233,21 @@ class HomePageViewControllerTests: XCTestCase {
         return [article1!, article2!]
     }
     
+    func getTestFilteredData() -> [NewsArticle] {
+        let headline1 = [Constants.ResponseParameters.GetArticlesHeadlineMain : "Obama serves his last day at office."]
+        
+        let imageUrl1 = [Constants.ResponseParameters.GetArticlesMultimediaUrl : "nus/api/v1.json"]
+        
+        // Article 1
+        var doc1: [String:Any] = [:]
+        doc1[Constants.ResponseParameters.GetArticlesId] = "14612678900ae512"
+        doc1[Constants.ResponseParameters.GetArticlesSnippet] = "President Obama is servign his last day at office. Lets have a look.."
+        doc1[Constants.ResponseParameters.GetArticlesWebUrl] = "https://nytimes.com/"
+        doc1[Constants.ResponseParameters.GetArticlesHeadline] = headline1
+        doc1[Constants.ResponseParameters.GetArticlesMultimedia] = [imageUrl1]
+        doc1[Constants.ResponseParameters.GetArticlesPublicationDate] = "2017-01-27T09:51:34+0000"
+        let article1 = NewsArticle.init(doc1)
+        
+        return [article1!]
+    }
 }
