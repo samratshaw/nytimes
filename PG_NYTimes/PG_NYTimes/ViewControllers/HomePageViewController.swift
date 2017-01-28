@@ -74,20 +74,9 @@ class HomePageViewController: BaseViewController {
         // Call the service
         getNewsArticles(fromService: service)
         
+        // Initial Setup
         title = "New York Times Clone"
         isTableViewHidden = true
-        customizeSearchBar()
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-    
-    /****************************/
-    // MARK: - Helpers
-    /****************************/
-    private func customizeSearchBar() {
         searchBar.showsCancelButton = true
     }
 }
