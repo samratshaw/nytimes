@@ -196,6 +196,29 @@ class HomePageViewControllerTests: XCTestCase {
         XCTAssertEqual(0, viewController.collectionView.numberOfSections)
     }
     
+    func testRemoveSearchBarAsFirstResponderAndHideTableView() {
+        viewController.searchBar.becomeFirstResponder()
+        viewController.tableView.isHidden = false
+        
+        viewController.removeSearchBarAsFirstResponderAndHideTableView()
+        
+        XCTAssertFalse(viewController.searchBar.isFirstResponder)
+        XCTAssertFalse(viewController.tableView.isHidden)
+    }
+    
+    func testPerformSearchForText() {
+        viewController.articles = getTestData()
+        viewController.searchBar.becomeFirstResponder()
+        viewController.tableView.isHidden = false
+        
+        viewController.performSearchForText("Increase in")
+        
+        XCTAssertEqual(viewController.arrFilteredArticles.count, 1)
+        XCTAssertTrue(viewController.isFiltered)
+        XCTAssertFalse(viewController.searchBar.isFirstResponder)
+        XCTAssertFalse(viewController.tableView.isHidden)
+    }
+    
     /****************************/
     // MARK: - Private Methods
     /****************************/

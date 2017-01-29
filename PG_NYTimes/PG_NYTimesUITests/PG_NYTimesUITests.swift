@@ -28,9 +28,67 @@ class PG_NYTimesUITests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testCollectionViewInitialLoad() {
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
+        
+        let app = XCUIApplication()
+        let firstChild = app.collectionViews.children(matching:.any).element(boundBy: 0)
+        
+        // Check if the collection view is displayed
+        XCTAssertNotNil(firstChild)
+        XCTAssertTrue(firstChild.isHittable)
+        
+        app.swipeUp()
+        
     }
     
+    func testCollectionViewDetailNavigation() {
+        
+        let app = XCUIApplication()
+        let firstChild = app.collectionViews.children(matching:.any).element(boundBy: 0)
+        
+        // Check if the collection view is displayed
+        XCTAssertNotNil(firstChild)
+        XCTAssertTrue(firstChild.isHittable)
+        
+        firstChild.tap()
+        
+        // The list should be in the navigtion controller stack now
+        XCTAssertFalse(firstChild.exists)
+        
+        // Assert that on tap we are navigating to the detail screen
+        XCTAssertTrue(app.otherElements["URL"].exists)
+        
+        // Now check we can return back to the main screen
+        XCTAssertTrue(app.buttons["Done"].exists)
+        XCTAssertTrue(app.buttons["Done"].isHittable)
+        
+        app.buttons["Done"].tap()
+        
+        // Now the collection view should be visible
+        XCTAssertTrue(firstChild.isHittable)
+    }
+    
+    func testCollectionViewInfiniteLoading() {
+        let app = XCUIApplication()
+        var child = app.collectionViews.children(matching:.any).element(boundBy: 0)
+        
+        for _ in 0..<7 {
+            child = app.collectionViews.children(matching:.any).element(boundBy: 0)
+            child.swipeUp()
+        }
+        child = app.collectionViews.children(matching:.any).element(boundBy: 0)
+        XCTAssertNotNil(child)
+    }
+    
+    func testCollectionViewLoadingCount() {
+        let app = XCUIApplication()
+        var child = app.collectionViews.children(matching:.any).element(boundBy: 10)
+        XCTAssertNotNil(child)
+        
+        child = app.collectionViews.children(matching:.any).element(boundBy: 20)
+        XCTAssertNotNil(child)
+        
+    }
 }

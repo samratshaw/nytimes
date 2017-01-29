@@ -39,8 +39,7 @@ struct NewsArticleService: Gettable {
                 completionHandler(Result.Success(self.parseResponse(parsedData)))
             } catch let error as NSError {
                 // TODO: - Handle this error scenario
-                print(error)
-                completionHandler(Result.Success(Array<NewsArticle>()))
+                completionHandler(Result.Failure(error))
             }
         }
     }
