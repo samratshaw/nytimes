@@ -208,7 +208,7 @@ extension HomePageViewController: UISearchBarDelegate {
 extension HomePageViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return lastSearchedItems.count > 10 ? Constants.General.SearchResultsMaximumCount : lastSearchedItems.count
+        return lastSearchedItems.count > Constants.General.SearchResultsMaximumCount ? Constants.General.SearchResultsMaximumCount : lastSearchedItems.count
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
