@@ -26,27 +26,11 @@ class HomePageViewController: BaseViewController {
     
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
-    // The service class attached with this controller
-    var service: NewsArticleService = NewsArticleService()
+    // The manager for this view controller consisting the business logic
+    var manager: HomePageManager = HomePageManager()
     
-    // Array for keeping track of the last searched items
-    var lastSearchedItems: Array<String> = []
-    
-    // Array containing the articles
-    var articles: Array<NewsArticle> = [] {
-        didSet {
-            collectionView.reloadData()
-        }
-    }
-    
-    // The array containing the filtered results
-    var arrFilteredArticles: Array<NewsArticle> = []
-    
-    // Keep track whether the datasource is filtered or not.
-    var isFiltered: Bool = false
-    
-    // The page that was last loaded
-    var pageNumber: CUnsignedShort = 0
+    // Track the first load
+    var isInitialDataLoaded: Bool = false
     
     // Track whether the tableview is displayed or not
     var isTableViewHidden: Bool  =  false {
@@ -60,9 +44,6 @@ class HomePageViewController: BaseViewController {
             }
         }
     }
-    
-    var isInitialDataLoaded: Bool = false
-    
     /****************************/
     // MARK: - View Lifecycle
     /****************************/
@@ -72,7 +53,7 @@ class HomePageViewController: BaseViewController {
         // Do any additional setup after loading the view, typically from a nib.
         
         // Call the service
-        getNewsArticles(fromService: service)
+        fetchNewsArticles()
         
         // Initial Setup
         title = "New York Times Clone"
@@ -90,13 +71,13 @@ extension HomePageViewController: UICollectionViewDataSource {
     }
     
     public func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return isFiltered ? arrFilteredArticles.count : articles.count
+        return manager.getArticlesToDisplay().count
     }
     
     public func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Constants.CellIdentifiers.HomePageCollectionViewCellIdentifier, for: indexPath) as! HomePageCollectionViewCell
         
-        let article = getArticleForCollectionCellAtIndexPath(indexPath)
+        let article = manager.getArticlesToDisplay()[indexPath.row]
         
         cell.lblTitle.text = article.headline
         cell.lblSnippet.text = article.snippet
@@ -111,7 +92,6 @@ extension HomePageViewController: UICollectionViewDataSource {
                 }
             }
         }
-        
         return cell
     }
 }
@@ -121,7 +101,7 @@ extension HomePageViewController: UICollectionViewDataSource {
 extension HomePageViewController: UICollectionViewDelegate {
     
     public func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedArticle = isFiltered ? arrFilteredArticles[indexPath.row] : articles[indexPath.row]
+        let selectedArticle = manager.getArticlesToDisplay()[indexPath.row]
         let safariViewController = SFSafariViewController(url: NSURL(string: selectedArticle.webUrl) as! URL, entersReaderIfAvailable:true)
         safariViewController.delegate = self
         
@@ -162,9 +142,8 @@ extension HomePageViewController: UIScrollViewDelegate {
         if scrollViewBottomEdge >= scrollView.contentSize.height {
             
             // Only call the service when another call is not being made. The activity indicator will be shown when a service is being called. Thus using the same instead of declaring another bool. Also added the filtring aspect.
-            if !activityIndicator.isAnimating && !isFiltered {
-                pageNumber += 1
-                getNewsArticles(fromService: service)
+            if !activityIndicator.isAnimating && !manager.isFiltered {
+                fetchNewsArticles()
             }
         }
     }
@@ -176,12 +155,11 @@ extension HomePageViewController: UISearchBarDelegate {
     
     public func searchBarShouldBeginEditing(_ searchBar: UISearchBar) -> Bool {
         // Only show the table if there are any previous searched items.
-        if lastSearchedItems.count > 0 {
+        if manager.getLastSearchedItems().count > 0 {
             // Display the table view
             if isTableViewHidden {
                 isTableViewHidden = false
             }
-            // Reload the contents of tableview
             tableView.reloadData()
         }
         return true
@@ -190,15 +168,14 @@ extension HomePageViewController: UISearchBarDelegate {
     public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         if (searchBar.text?.characters.count)! > 0 {
             let searchText = searchBar.text!
-            lastSearchedItems.insert(searchText, at: 0)
-            performSearchForText(searchText)
+            performSearchForText(searchText, AndRememberText: true)
         }
     }
     
     public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // Hide the keyboard & also the table view if it shown
+        // Hide the keyboard & also the table view if it is shown
         searchBar.text = ""
-        isFiltered = false
+        manager.isFiltered = false
         removeSearchBarAsFirstResponderAndHideTableView()
     }
 }
@@ -208,12 +185,15 @@ extension HomePageViewController: UISearchBarDelegate {
 extension HomePageViewController: UITableViewDataSource {
     
     public func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return lastSearchedItems.count > Constants.General.SearchResultsMaximumCount ? Constants.General.SearchResultsMaximumCount : lastSearchedItems.count
+        let lastSearchedCount = manager.getLastSearchedItems().count
+        return (lastSearchedCount > Constants.General.SearchResultsMaximumCount)
+            ? Constants.General.SearchResultsMaximumCount
+            : lastSearchedCount
     }
     
     public func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.CellIdentifiers.HomePageSearchResultsTableViewCellIdentifier, for:indexPath)
-        cell.textLabel?.text = lastSearchedItems[indexPath.row]
+        cell.textLabel?.text = manager.getLastSearchedItems()[indexPath.row]
         return cell
     }
 }
@@ -224,8 +204,8 @@ extension HomePageViewController: UITableViewDelegate {
     
     public func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView .deselectRow(at: indexPath, animated: true)
-        let selectedSearchText = lastSearchedItems[indexPath.row]
-        performSearchForText(selectedSearchText)
+        let selectedSearchText = manager.getLastSearchedItems()[indexPath.row]
+        performSearchForText(selectedSearchText, AndRememberText: false)
     }
 }
 
@@ -233,10 +213,7 @@ extension HomePageViewController: UITableViewDelegate {
 // MARK: - Private Extension
 /****************************/
 extension HomePageViewController {
-    
-    /**
-     * Method to resign the first responder from search bar & hide the tableview.
-     */
+
     func removeSearchBarAsFirstResponderAndHideTableView() {
         if searchBar.isFirstResponder {
             searchBar.resignFirstResponder()
@@ -248,62 +225,23 @@ extension HomePageViewController {
         collectionView.reloadData()
     }
     
-    /**
-     * Method to call the web service to get news articles. This method will show the activity indicator, call the web sevice & then update the model.
-     */
-    func getNewsArticles<Service: Gettable>(fromService service: Service) where Service.AssociatedData == [NewsArticle] {
-        
+    func fetchNewsArticles() {
         // Start the loading indicator
         activityIndicator.startAnimating()
-        
-        service.getWithParameters([Constants.RequestParameters.Page : String(pageNumber)]) { [weak self] result in
-            switch result {
-            case .Success(let newsArticles):
-                self?.isInitialDataLoaded = true
-                self?.articles += newsArticles
-                DispatchQueue.main.async {
-                    print(newsArticles)
-                    self?.collectionView.reloadData()
-                    self?.activityIndicator.stopAnimating()
-                }
-            case .Failure(let error):
-                // TODO: - Handle the error scenario
-                print(error)
+        manager.fetchNewsArticles { [weak self] (result) in
+            self?.isInitialDataLoaded = true
+            DispatchQueue.main.async {
+                self?.collectionView.reloadData()
                 self?.activityIndicator.stopAnimating()
             }
         }
     }
     
     /**
-     * Method to filter the array based on the search text. 
-     * It filters based on "headline" property of the article.
-     */
-    func filterArray(_ array:[NewsArticle], ForSearchText searchText: String) -> [NewsArticle] {
-        return array.filter { (article) -> Bool in
-            return article.headline.localizedCaseInsensitiveContains(searchText)
-        }
-    }
-    
-    /**
-     * Method to get the article that needs to be dsiplayed.
-     * Checks if the the data needs to be filtered or not.
-     */
-    func getArticleForCollectionCellAtIndexPath(_ indexPath:IndexPath) -> NewsArticle {
-        let article: NewsArticle
-        if isFiltered {
-            article = arrFilteredArticles[indexPath.row]
-        } else {
-            article = articles[indexPath.row]
-        }
-        return article
-    }
-    
-    /**
      * Method to perform the search depending on user's input
      */
-    func performSearchForText(_ searchText: String) {
-        arrFilteredArticles = filterArray(articles, ForSearchText: searchText)
-        isFiltered = true
+    func performSearchForText(_ searchText: String, AndRememberText rememberText: Bool) {
+        manager.performSearchForText(searchText, AndRememberText: rememberText)
         searchBar.text = searchText
         removeSearchBarAsFirstResponderAndHideTableView()
     }

@@ -19,11 +19,13 @@
 		8C03F7071E2CF55B002A740B /* BaseEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C03F7061E2CF55B002A740B /* BaseEntity.swift */; };
 		8C03F70B1E2CF5EA002A740B /* BaseCustomCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C03F70A1E2CF5EA002A740B /* BaseCustomCollectionViewCell.swift */; };
 		8C0A73B31E3D19D300FE06D3 /* NewsArticleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C0A73B21E3D19D300FE06D3 /* NewsArticleTests.swift */; };
+		8C48E28A1E48DF1E0057EC3D /* HomePageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C48E2891E48DF1E0057EC3D /* HomePageManager.swift */; };
 		8C4E9D2F1E2F85ED0079FDBD /* HomePageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4E9D2E1E2F85ED0079FDBD /* HomePageCollectionViewCell.swift */; };
 		8CDB374D1E3625DE00E15C84 /* NewsArticle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB374C1E3625DE00E15C84 /* NewsArticle.swift */; };
 		8CDB37541E36382700E15C84 /* BaseNetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB37531E36382700E15C84 /* BaseNetworkService.swift */; };
 		8CDB37581E36392600E15C84 /* NewsArticleService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDB37571E36392600E15C84 /* NewsArticleService.swift */; };
 		8CEAB1131E38DB8200C0411D /* HomePageViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEAB1121E38DB8200C0411D /* HomePageViewControllerTests.swift */; };
+		8CEF16C11E48ED9500D2A7EA /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEF16C01E48ED9500D2A7EA /* Enums.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -62,11 +64,13 @@
 		8C03F7061E2CF55B002A740B /* BaseEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseEntity.swift; sourceTree = "<group>"; };
 		8C03F70A1E2CF5EA002A740B /* BaseCustomCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseCustomCollectionViewCell.swift; sourceTree = "<group>"; };
 		8C0A73B21E3D19D300FE06D3 /* NewsArticleTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsArticleTests.swift; sourceTree = "<group>"; };
+		8C48E2891E48DF1E0057EC3D /* HomePageManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomePageManager.swift; sourceTree = "<group>"; };
 		8C4E9D2E1E2F85ED0079FDBD /* HomePageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomePageCollectionViewCell.swift; sourceTree = "<group>"; };
 		8CDB374C1E3625DE00E15C84 /* NewsArticle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsArticle.swift; sourceTree = "<group>"; };
 		8CDB37531E36382700E15C84 /* BaseNetworkService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseNetworkService.swift; sourceTree = "<group>"; };
 		8CDB37571E36392600E15C84 /* NewsArticleService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewsArticleService.swift; sourceTree = "<group>"; };
 		8CEAB1121E38DB8200C0411D /* HomePageViewControllerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomePageViewControllerTests.swift; sourceTree = "<group>"; };
+		8CEF16C01E48ED9500D2A7EA /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -121,6 +125,7 @@
 				8C03F6ED1E2CF454002A740B /* Constants */,
 				8C03F6EE1E2CF454002A740B /* Enums */,
 				8C03F70E1E2CF92C002A740B /* Logger */,
+				8C48E2881E48DEF80057EC3D /* Manager */,
 				8C03F6EF1E2CF454002A740B /* Models */,
 				8CDB37511E36378400E15C84 /* Network */,
 				8C03F6F11E2CF454002A740B /* Storyboards */,
@@ -172,6 +177,7 @@
 		8C03F6EE1E2CF454002A740B /* Enums */ = {
 			isa = PBXGroup;
 			children = (
+				8CEF16C01E48ED9500D2A7EA /* Enums.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -264,6 +270,14 @@
 			children = (
 			);
 			path = Logger;
+			sourceTree = "<group>";
+		};
+		8C48E2881E48DEF80057EC3D /* Manager */ = {
+			isa = PBXGroup;
+			children = (
+				8C48E2891E48DF1E0057EC3D /* HomePageManager.swift */,
+			);
+			path = Manager;
 			sourceTree = "<group>";
 		};
 		8CDB37511E36378400E15C84 /* Network */ = {
@@ -427,6 +441,8 @@
 				8C03F70B1E2CF5EA002A740B /* BaseCustomCollectionViewCell.swift in Sources */,
 				8C03F7031E2CF4F1002A740B /* Constants.swift in Sources */,
 				8CDB37581E36392600E15C84 /* NewsArticleService.swift in Sources */,
+				8CEF16C11E48ED9500D2A7EA /* Enums.swift in Sources */,
+				8C48E28A1E48DF1E0057EC3D /* HomePageManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -573,6 +589,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PG_NYTimes/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.footyapps27.PG-NYTimes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -585,6 +602,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = PG_NYTimes/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.footyapps27.PG-NYTimes";
 				PRODUCT_NAME = "$(TARGET_NAME)";
