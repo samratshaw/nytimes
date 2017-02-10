@@ -52,7 +52,7 @@ class HomePageViewController: BaseViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        // Call the service
+        // Get articles
         fetchNewsArticles()
         
         // Initial Setup

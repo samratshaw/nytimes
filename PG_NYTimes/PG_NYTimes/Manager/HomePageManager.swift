@@ -95,7 +95,6 @@ extension HomePageManager {
         }
     }
     
-    
     /**
      * Method to filter the array based on the search text.
      * It filters based on "headline" property of the article.
@@ -105,5 +104,4 @@ extension HomePageManager {
             return article.headline.localizedCaseInsensitiveContains(searchText)
         }
     }
-    
 }
