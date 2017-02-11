@@ -11,7 +11,7 @@ import Foundation
 /**
  * This structure represents each NewsArticle that is parsed from the website.
  */
-struct NewsArticle: BaseEntity {
+struct NewsArticle {
     
     /***********************************/
     // MARK: - Properties

@@ -24,7 +24,7 @@ enum HTTPMethod: String {
 }
 
 /**
- * Enum to call a get request
+ * Protocol to call a get request
  */
 protocol Gettable {
     
@@ -38,3 +38,28 @@ protocol Gettable {
     func getWithParameters(_ parameters: Dictionary<String,String>, completionHandler: @escaping (Result<AssociatedData>) -> Void)
 }
 
+/**
+ * Protocol added for enabling testing.
+ */
+
+protocol URLSessionDataTaskProtocol {
+    func resume()
+}
+
+protocol URLSessionProtocol {
+    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Swift.Void) -> URLSessionDataTaskProtocol
+}
+
+/**
+ * Make sure the foundation class adheres to the custom protocol for enabling testing.
+ */
+extension URLSessionDataTask: URLSessionDataTaskProtocol { }
+
+
+extension URLSession : URLSessionProtocol {
+    
+    func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Swift.Void) -> URLSessionDataTaskProtocol {
+        
+        return (dataTask(with: request, completionHandler: completionHandler) as URLSessionDataTask) as URLSessionDataTaskProtocol
+    }
+}

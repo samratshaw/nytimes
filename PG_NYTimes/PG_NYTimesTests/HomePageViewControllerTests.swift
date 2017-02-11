@@ -12,38 +12,7 @@ import XCTest
 
 class HomePageViewControllerTests: XCTestCase {
     
-    /****************************/
-    // MARK: - Mocked Service Class
-    /****************************/
-    class MockNewsArticleService: Gettable {
-        
-        enum MockError: Error {
-            case NoInternetConnection
-        }
-        
-        let successScenario: Bool
-        
-        // Initializer
-        init(forSuccess successScenario: Bool) {
-            self.successScenario = successScenario
-        }
-        
-        var getWasCalled = false
-        
-        let successResult = Result.Success(HomePageViewControllerTests().getTestData())
-        let failureResult = Result<[NewsArticle]>.Failure(MockError.NoInternetConnection)
-        
-        func getWithParameters(_ parameters: Dictionary<String, String>, completionHandler: @escaping (Result<[NewsArticle]>) -> Void) {
-            
-            getWasCalled = true
-            
-            if successScenario {
-                completionHandler(successResult)
-            } else {
-                completionHandler(failureResult)
-            }
-        }
-    }
+    
     
     /****************************/
     // MARK: - Properties
@@ -78,36 +47,6 @@ class HomePageViewControllerTests: XCTestCase {
     // MARK: - Tests
     /****************************/
     
-    func testFilterArray() {
-        // Declare the array
-        var articles: [NewsArticle] = []
-        // Empty array
-        XCTAssertEqual(0, (viewController.filterArray(articles , ForSearchText: "").count))
-        
-        XCTAssertEqual(0, (viewController.filterArray(articles, ForSearchText: "dummy").count))
-        
-        // Populate the array now
-        articles = getTestData()
-        
-        XCTAssertEqual(0, (viewController.filterArray(articles, ForSearchText: "Test").count))
-        
-        XCTAssertEqual(1, (viewController.filterArray(articles, ForSearchText: "Manchester").count))
-        
-        XCTAssertEqual(1, (viewController.filterArray(articles, ForSearchText: "Oil").count))
-        
-        // Add similar items now
-        articles += getTestData()
-        
-        /*
-         Now we check for size & case sensitivity.
-         */
-        XCTAssertEqual(0, (viewController.filterArray(articles, ForSearchText: "dummy").count))
-        
-        XCTAssertEqual(2, (viewController.filterArray(articles, ForSearchText: "united").count))
-        
-        XCTAssertEqual(2, (viewController.filterArray(articles, ForSearchText: "Prices").count))
-    }
-    
     func testStoryBoardConnections() {
         XCTAssertNotNil(viewController.activityIndicator)
         XCTAssertNotNil(viewController.collectionView)
@@ -116,84 +55,23 @@ class HomePageViewControllerTests: XCTestCase {
     }
     
     func testObjectInitializationOnLaunch() {
-        XCTAssertNotNil(viewController.service)
-        XCTAssertNotNil(viewController.lastSearchedItems)
-        XCTAssertNotNil(viewController.articles)
-        XCTAssertNotNil(viewController.arrFilteredArticles)
+        XCTAssertNotNil(viewController.manager)
     }
     
-    func testGetArticleForCollection() {
+    func testIsTableViewHidden() {
+        viewController.isTableViewHidden = true
+        XCTAssertTrue(viewController.tableView.isHidden)
+        XCTAssertFalse(viewController.collectionView.isHidden)
         
-        viewController.articles = getTestData()
-        viewController.isFiltered = false
-        
-        XCTAssert(viewController.articles.first! == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 0, section: 0)))
-        XCTAssert(viewController.articles[1] == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 1, section: 0)))
-        
-        // Now check for filtered data
-        viewController.isFiltered = true
-        viewController.arrFilteredArticles = getTestFilteredData()
-        
-        XCTAssert(viewController.arrFilteredArticles[0] == viewController.getArticleForCollectionCellAtIndexPath(IndexPath(row: 0, section: 0)))
+        viewController.isTableViewHidden = false
+        XCTAssertFalse(viewController.tableView.isHidden)
+        XCTAssertTrue(viewController.collectionView.isHidden)
     }
     
-    func testGetNewsArticlesForSuccess() {
-        
-        let mockNewsArticleService = MockNewsArticleService(forSuccess: true)
-        // Before the service is called
-        XCTAssertEqual(0, viewController.articles.count)
-        XCTAssertFalse(viewController.isInitialDataLoaded)
-        XCTAssertTrue(viewController.isTableViewHidden)
-        
-        // UI should be not displayed to user
-        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
-        // Call the service
-        viewController.getNewsArticles(fromService: mockNewsArticleService)
-        
-        
-        // Check if service was called
-        XCTAssertTrue(mockNewsArticleService.getWasCalled)
-        
-        // Check if the local variables were updated
-        XCTAssertEqual(viewController.articles.count, getTestData().count)
-        XCTAssertEqual(viewController.articles.first, getTestData().first)
-        XCTAssertTrue(viewController.isInitialDataLoaded)
-        
-        // Data is displayed on screen
-        XCTAssertEqual(1, viewController.collectionView.numberOfSections)
-        XCTAssertEqual(getTestData().count, viewController.collectionView.numberOfItems(inSection: 0))
-        
-        // Call the service AGAIN
-        viewController.getNewsArticles(fromService: mockNewsArticleService)
-        // The total data should be appended
-        XCTAssertEqual(viewController.articles.count, (getTestData().count * 2))
-        XCTAssertEqual((getTestData().count * 2), viewController.collectionView.numberOfItems(inSection: 0))
-    }
-    
-    func testGetNewsArticlesForFailure() {
-        
-        let mockNewsArticleService = MockNewsArticleService(forSuccess: false)
-        // Before the service is called
-        XCTAssertEqual(0, viewController.articles.count)
-        XCTAssertFalse(viewController.isInitialDataLoaded)
-        XCTAssertTrue(viewController.isTableViewHidden)
-        
-        // UI should be not displayed to user
-        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
-        
-        // Call the service
-        viewController.getNewsArticles(fromService: mockNewsArticleService)
-        
-        
-        // Check if service was called
-        XCTAssertTrue(mockNewsArticleService.getWasCalled)
-        
-        // Check if the local variables were updated
-        XCTAssertEqual(0, viewController.articles.count)
-        XCTAssertFalse(viewController.isInitialDataLoaded)
-        
-        // Data is displayed on screen
-        XCTAssertEqual(0, viewController.collectionView.numberOfSections)
+    func testPerformSearchForText() {
+        XCTAssertEqual("", viewController.searchBar.text)
+        viewController.performSearchForText("Manchester United", AndRememberText: true)
+        XCTAssertEqual("Manchester United", viewController.searchBar.text)
     }
     
     func testRemoveSearchBarAsFirstResponderAndHideTableView() {
@@ -202,19 +80,6 @@ class HomePageViewControllerTests: XCTestCase {
         
         viewController.removeSearchBarAsFirstResponderAndHideTableView()
         
-        XCTAssertFalse(viewController.searchBar.isFirstResponder)
-        XCTAssertFalse(viewController.tableView.isHidden)
-    }
-    
-    func testPerformSearchForText() {
-        viewController.articles = getTestData()
-        viewController.searchBar.becomeFirstResponder()
-        viewController.tableView.isHidden = false
-        
-        viewController.performSearchForText("Increase in")
-        
-        XCTAssertEqual(viewController.arrFilteredArticles.count, 1)
-        XCTAssertTrue(viewController.isFiltered)
         XCTAssertFalse(viewController.searchBar.isFirstResponder)
         XCTAssertFalse(viewController.tableView.isHidden)
     }

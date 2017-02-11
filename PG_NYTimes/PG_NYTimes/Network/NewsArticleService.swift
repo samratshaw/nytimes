@@ -12,6 +12,8 @@ struct NewsArticleService: Gettable {
     // Set the associated datatype
     typealias AssociatedData = [NewsArticle]
     
+    var session: URLSessionProtocol = URLSession.shared
+    
     /****************************/
     // MARK: - Protocol Implementation
     /****************************/
@@ -55,17 +57,22 @@ extension NewsArticleService {
     func parseResponse(_ response: [String:Any]) -> [NewsArticle] {
         let response = (response["response"] as? [String:Any])
         let docs = response?["docs"] as? Array<[String:Any]>
-
-        var arrArticles = [NewsArticle]()
+        
+        var articles = [NewsArticle]()
+        
+        guard docs != nil else {
+            return articles // Empty array
+        }
+        
         // Now loop throught the array & create the models
         for dict in docs! {
             
             if let article = NewsArticle.init(dict) {
                 // Only added if the article is not nil
-                arrArticles.append(article)
+                articles.append(article)
             }
         }
-        return arrArticles
+        return articles
     }
     
     /**
@@ -91,7 +98,6 @@ extension NewsArticleService {
         var request = request
         request.httpMethod = method
         
-        let session = URLSession(configuration: URLSessionConfiguration.default)
         session.dataTask(with: request as URLRequest) { (data, response, error) -> Void in
             completion(data, response, error)
         }.resume()
