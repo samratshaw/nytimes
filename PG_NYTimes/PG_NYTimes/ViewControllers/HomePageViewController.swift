@@ -108,6 +108,14 @@ extension HomePageViewController: UICollectionViewDelegate {
         // Present the SFSafariViewController
         self.present(safariViewController, animated: true)
     }
+    
+    public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if((manager.getArticlesToDisplay().count - indexPath.row) < Constants.General.NumberOfCellsBeforeServiceIsCalled) {
+            if !activityIndicator.isAnimating && !manager.isFiltered {
+                fetchNewsArticles()
+            }
+        }
+    }
 }
 /****************************/
 // MARK: - Extension: UICollectionViewDelegateFlowLayout
@@ -126,25 +134,6 @@ extension HomePageViewController: SFSafariViewControllerDelegate {
     
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true) {
-        }
-    }
-}
-/****************************/
-// MARK: - Extension: UIScrollViewDelegate
-/****************************/
-extension HomePageViewController: UIScrollViewDelegate {
-    
-    // Used scrollview delegate instead of "willDisplayCell" since the collection view was not loading as expected when we reached the bottom of the collection. Comparatively this performed better.
-    public func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        
-        let scrollViewBottomEdge = scrollView.contentOffset.y + scrollView.frame.size.height;
-        
-        if scrollViewBottomEdge >= scrollView.contentSize.height {
-            
-            // Only call the service when another call is not being made. The activity indicator will be shown when a service is being called. Thus using the same instead of declaring another bool. Also added the filtring aspect.
-            if !activityIndicator.isAnimating && !manager.isFiltered {
-                fetchNewsArticles()
-            }
         }
     }
 }

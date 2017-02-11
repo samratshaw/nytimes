@@ -56,6 +56,7 @@ struct Constants {
     
     struct General {
         static let SearchResultsMaximumCount = 10
+        static let NumberOfCellsBeforeServiceIsCalled = 5
         static let ServerDateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
         static let DisplayDateFormat = "MMM dd, yyyy"
     }
