@@ -31,6 +31,47 @@ class NewsArticleServiceTests: XCTestCase {
     }
     
     /****************************/
+    // MARK: - Mock classes
+    /****************************/
+    class MockURLSession: URLSessionProtocol {
+        
+        enum MockError: Error {
+            case NoInternetConnection
+        }
+        
+        enum TestScenario: Int {
+            case NilData, NilResponse, IncorrectResponseFormat, Error
+        }
+        
+        let testScenario: TestScenario
+        var mockDataTask = MockURLSessionDataTask()
+        // Initializer
+        init(forScenario testScenario: TestScenario) {
+            self.testScenario = testScenario
+        }
+        
+        func dataTask(with request: URLRequest, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Swift.Void) -> URLSessionDataTaskProtocol {
+            
+            switch testScenario {
+            case .NilData:
+                completionHandler(nil, nil, nil)
+            case .NilResponse:
+                completionHandler(Data(), nil, nil)
+            case .IncorrectResponseFormat:
+                let urlResponse = URLResponse()
+                completionHandler(Data(), urlResponse, nil)
+            case .Error:
+                completionHandler(Data(), nil, MockError.NoInternetConnection)
+            }
+            
+            return mockDataTask
+        }
+    }
+    
+    class MockURLSessionDataTask: URLSessionDataTaskProtocol {
+        func resume() { }
+    }
+    /****************************/
     // MARK: - Tests
     /****************************/
     func testGetURLRequestForEmptyParameter() {
@@ -119,21 +160,71 @@ class NewsArticleServiceTests: XCTestCase {
         XCTAssertEqual(article2 , newsArticleService.parseResponse(validResponse2).last)
     }
     
-    func testGetWithParameters() {
+    func testGetWithParametersForSuccess() {
         let testExpectation = expectation(description: "Wait for service to load.")
-        var articles: [NewsArticle]?
+        //var articles: [NewsArticle]?
         newsArticleService.getWithParameters([Constants.RequestParameters.Page : "0"]) { (result) in
             switch result {
             case .Success(let newsArticles):
-                articles = newsArticles
-            default: break   
+                XCTAssertNotNil(newsArticles)
+                XCTAssertTrue(newsArticles.count > 0)
+                testExpectation.fulfill()
+            case .Failure( _):
+                XCTFail()
+                testExpectation.fulfill()
             }
-            testExpectation.fulfill()
         }
         
-        waitForExpectations(timeout: 15, handler: nil)
-        XCTAssertNotNil(articles)
-        XCTAssertEqual(10, articles!.count)
+        waitForExpectations(timeout: 50, handler: nil)
+    }
+    
+    func testGetWithParametersForNilData() {
+        let session = MockURLSession(forScenario: MockURLSession.TestScenario.NilData)
+        newsArticleService.session = session
+        newsArticleService.getWithParameters([Constants.RequestParameters.Page : "0"]) { (result) in
+            switch result {
+            case .Success(let newsArticles):
+                XCTAssertNotNil(newsArticles)
+                XCTAssertEqual(0, newsArticles.count)
+            default: break
+            }
+        }
+    }
+    
+    func testGetWithParametersForNilResponse() {
+        let session = MockURLSession(forScenario: MockURLSession.TestScenario.NilResponse)
+        newsArticleService.session = session
+        newsArticleService.getWithParameters([Constants.RequestParameters.Page : "0"]) { (result) in
+            switch result {
+            case .Failure(let error):
+                XCTAssertNotNil(error)
+            default: break
+            }
+        }
+    }
+    
+    func testGetWithParametersForIncorrectResponseFormat() {
+        let session = MockURLSession(forScenario: MockURLSession.TestScenario.IncorrectResponseFormat)
+        newsArticleService.session = session
+        newsArticleService.getWithParameters([Constants.RequestParameters.Page : "0"]) { (result) in
+            switch result {
+            case .Failure(let error):
+                XCTAssertNotNil(error)
+            default: break
+            }
+        }
+    }
+    
+    func testGetWithParametersForError() {
+        let session = MockURLSession(forScenario: MockURLSession.TestScenario.Error)
+        newsArticleService.session = session
+        newsArticleService.getWithParameters([Constants.RequestParameters.Page : "0"]) { (result) in
+            switch result {
+            case .Failure(let error):
+                XCTAssertNotNil(error)
+            default: break
+            }
+        }
     }
     
     /****************************/

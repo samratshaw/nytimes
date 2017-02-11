@@ -12,6 +12,8 @@ struct NewsArticleService: Gettable {
     // Set the associated datatype
     typealias AssociatedData = [NewsArticle]
     
+    var session: URLSessionProtocol = URLSession.shared
+    
     /****************************/
     // MARK: - Protocol Implementation
     /****************************/
@@ -96,7 +98,6 @@ extension NewsArticleService {
         var request = request
         request.httpMethod = method
         
-        let session = URLSession(configuration: URLSessionConfiguration.default)
         session.dataTask(with: request as URLRequest) { (data, response, error) -> Void in
             completion(data, response, error)
         }.resume()
