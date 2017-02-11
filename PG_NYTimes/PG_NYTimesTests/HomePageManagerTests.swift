@@ -104,6 +104,99 @@ class HomePageManagerControllerTests: XCTestCase {
         XCTAssertNotNil(manager.filteredArticles)
     }
     
+    func testFetchNewsArticlesForSuccess() {
+        
+        let mockNewsArticleService = MockNewsArticleService(forSuccess: true)
+        // Before the service is called
+        XCTAssertEqual(0, manager.articles.count)
+        
+        // Call the service
+        manager.getNewsArticles(fromService: mockNewsArticleService) { [weak self] (result) in
+            switch result {
+            case .Success(let newsArticles):
+                XCTAssertNotNil(newsArticles)
+                XCTAssertEqual(newsArticles.first, (self?.getTestData())!.first)
+                XCTAssertEqual(newsArticles.count, self?.getTestData().count)
+            case .Failure( _):
+                XCTFail("Error scenario received for success call.")
+            }
+        }
+        
+        // Check if service was called
+        XCTAssertTrue(mockNewsArticleService.getWasCalled)
+    }
+    
+    func testFetchNewsArticlesForFailure() {
+        
+        let mockNewsArticleService = MockNewsArticleService(forSuccess: false)
+        // Before the service is called
+        XCTAssertEqual(0, manager.articles.count)
+        
+        // Call the service
+        manager.getNewsArticles(fromService: mockNewsArticleService) { (result) in
+            switch result {
+            case .Success( _):
+                XCTFail("Success scenario received for error mock call.")
+            case .Failure(let error):
+                XCTAssertNotNil(error)
+            }
+        }
+        
+        // Check if service was called
+        XCTAssertTrue(mockNewsArticleService.getWasCalled)
+    }
+    
+    func testGetArticlesToDisplay() {
+        manager.articles = getTestData()
+        manager.filteredArticles = getTestFilteredData()
+        
+        // Initial scenario
+        XCTAssertFalse(manager.isFiltered)
+        
+        XCTAssertNotNil(manager.getArticlesToDisplay())
+        XCTAssertEqual(getTestData(), manager.getArticlesToDisplay())
+        XCTAssertEqual(getTestData().count, manager.getArticlesToDisplay().count)
+        
+        // Set the flag
+        manager.isFiltered = true
+        
+        XCTAssertTrue(manager.isFiltered)
+        
+        XCTAssertNotNil(manager.getArticlesToDisplay())
+        XCTAssertEqual(getTestFilteredData(), manager.getArticlesToDisplay())
+        XCTAssertEqual(getTestFilteredData().count, manager.getArticlesToDisplay().count)
+    }
+    
+    func testPerformSearchForText() {
+        
+        // Initial scenario
+        XCTAssertFalse(manager.isFiltered)
+        XCTAssertEqual(0, manager.getLastSearchedItems().count)
+        
+        manager.articles = getTestData()
+        
+        XCTAssertEqual(0, manager.filteredArticles.count)
+        
+        manager.performSearchForText("Manchester", AndRememberText: false)
+        
+        XCTAssertTrue(manager.isFiltered)
+        XCTAssertNotNil(manager.getArticlesToDisplay())
+        XCTAssertEqual(0, manager.getLastSearchedItems().count)
+        XCTAssertEqual(1, manager.getArticlesToDisplay().count)
+        
+        manager.performSearchForText("Manchester", AndRememberText: true)
+        
+        XCTAssertTrue(manager.isFiltered)
+        XCTAssertNotNil(manager.getArticlesToDisplay())
+        XCTAssertEqual(1, manager.getLastSearchedItems().count)
+        XCTAssertEqual("Manchester", manager.getLastSearchedItems().first)
+        
+        manager.performSearchForText("Oil", AndRememberText: true)
+        XCTAssertEqual(getTestData().first, manager.getArticlesToDisplay().first)
+        XCTAssertEqual(2, manager.getLastSearchedItems().count)
+        XCTAssertEqual("Oil", manager.getLastSearchedItems().first)
+    }
+    
     /****************************/
     // MARK: - Private Methods
     /****************************/
